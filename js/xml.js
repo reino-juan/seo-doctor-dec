@@ -14,9 +14,9 @@ const XML_COLUMN_SPECS = [
 // keeping each country's locales together.
 const XML_LOCALES = [
   'es-ES', 'fr-FR', 'en-GB', 'de-DE', 'it-IT',
-  'pl-PL', 'ro-RO', 'nl-NL', 'en-NL', 'fr-BE', 'nl-BE', 'en-BE', 'cs-CZ', 'sv-SE', 'en-SE',
-  'hu-HU', 'de-AT', 'de-CH', 'fr-CH', 'en-CH', 'sr-RS', 'bg-BG', 'da-DK', 'en-DK', 'no-NO',
-  'sk-SK', 'en-IE', 'hr-HR', 'sl-SI',
+  'tr-TR', 'pl-PL', 'ro-RO', 'nl-NL', 'en-NL', 'fr-BE', 'nl-BE', 'en-BE', 'cs-CZ', 'sv-SE',
+  'en-SE', 'he-IL', 'hu-HU', 'de-AT', 'de-CH', 'fr-CH', 'en-CH', 'sr-RS', 'bg-BG', 'da-DK',
+  'en-DK', 'no-NO', 'sk-SK', 'en-IE', 'hr-HR', 'sl-SI',
 ];
 
 // Values a market may choose: the Master Key plus the intentional "others" bucket.
@@ -80,8 +80,10 @@ function buildXml(entries, locales) {
   ].join('\n');
 }
 
-/** PageType_Update_YYYYMMDD.xml (local date). */
+/** PageType_Update_YYYYMMDD_HHMM.xml (local date and time, 24h). */
 function xmlFileName(date = new Date()) {
   const pad = (n) => String(n).padStart(2, '0');
-  return `PageType_Update_${date.getFullYear()}${pad(date.getMonth() + 1)}${pad(date.getDate())}.xml`;
+  const day = `${date.getFullYear()}${pad(date.getMonth() + 1)}${pad(date.getDate())}`;
+  const time = `${pad(date.getHours())}${pad(date.getMinutes())}`;
+  return `PageType_Update_${day}_${time}.xml`;
 }
