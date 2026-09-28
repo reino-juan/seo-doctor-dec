@@ -110,6 +110,21 @@ body {
   cursor: wait;
 }
 
+.btn-secondary {
+  margin-left: 12px;
+  background: var(--bg);
+  color: var(--brand);
+  border: 1.5px solid var(--brand);
+}
+
+.btn-secondary:hover {
+  background: #eef0f8;
+}
+
+.btn[hidden] {
+  display: none;
+}
+
 .btn-large {
   padding: 20px 32px;
   border-radius: 14px;

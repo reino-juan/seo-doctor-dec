@@ -8,10 +8,12 @@ const resultBox = document.getElementById('result');
 const incorrectCount = document.getElementById('incorrect-count');
 const totalCount = document.getElementById('total-count');
 const downloadButton = document.getElementById('download-button');
+const clearButton = document.getElementById('clear-button');
 
 let report = null; // { records, statuses }
 
 uploadButton.addEventListener('click', () => fileInput.click());
+clearButton.addEventListener('click', reset);
 fileInput.addEventListener('change', () => {
   const file = fileInput.files[0];
   if (file) handleFile(file);
@@ -35,11 +37,18 @@ downloadButton.addEventListener('click', async () => {
   }
 });
 
-async function handleFile(file) {
+function reset() {
   report = null;
   resultBox.hidden = true;
   errorBox.hidden = true;
+  fileName.textContent = '';
+  clearButton.hidden = true;
+}
+
+async function handleFile(file) {
+  reset();
   fileName.textContent = file.name;
+  clearButton.hidden = false;
 
   try {
     const rows = await readRows(file);
