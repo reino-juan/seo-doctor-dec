@@ -7,16 +7,16 @@
   const loading = document.getElementById('loading');
   const errorBox = document.getElementById('upload-error');
   const resultBox = document.getElementById('result');
-  const incorrectCount = document.getElementById('incorrect-count');
-  const incorrectNoun = document.getElementById('incorrect-noun');
-  const totalCount = document.getElementById('total-count');
-  const totalNoun = document.getElementById('total-noun');
+  const site = document.getElementById('result-site');
+  const finding = document.getElementById('finding');
+  const advice = document.getElementById('advice');
   const downloadButton = document.getElementById('download-button');
   const clearButton = document.getElementById('clear-button');
 
   let report = null; // { records, statuses }
 
   uploadButton.addEventListener('click', () => fileInput.click());
+  enableDrop(uploadButton, handleFile);
   clearButton.addEventListener('click', reset);
   fileInput.addEventListener('change', () => {
     const file = fileInput.files[0];
@@ -61,11 +61,7 @@
 
       const statuses = validate(records);
       report = { records, statuses };
-      const incorrect = statuses.filter((s) => s !== 'OK').length;
-      incorrectCount.textContent = incorrect;
-      incorrectNoun.textContent = plural(incorrect, 'page', 'pages');
-      totalCount.textContent = records.length;
-      totalNoun.textContent = plural(records.length, 'URL', 'URLs');
+      showDiagnosis(records, statuses);
       resultBox.hidden = false;
     } catch (err) {
       showError(`Could not read the file: ${err.message}`);
@@ -73,6 +69,24 @@
       loading.hidden = true;
       uploadButton.disabled = false;
       clearButton.hidden = false;
+    }
+  }
+
+  function showDiagnosis(records, statuses) {
+    const total = records.length;
+    const incorrect = statuses.filter((s) => s !== 'OK').length;
+    site.textContent = siteName(records[0].Address);
+
+    if (incorrect > 0) {
+      const pages = plural(total, 'page', 'pages');
+      setFinding(finding, incorrect, `of ${total} ${pages} ${plural(incorrect, 'needs', 'need')} a page type.`, {
+        alert: true,
+      });
+      advice.textContent =
+        'Download the report and send it to the market. They pick the missing page types from a dropdown in the GEO Page Type to Implement column.';
+    } else {
+      setFinding(finding, total, `${plural(total, 'page has', 'pages have')} a valid page type.`);
+      advice.textContent = 'Nothing for the market to fix. You can still download the report for your records.';
     }
   }
 

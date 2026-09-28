@@ -1,6 +1,6 @@
 // Excel report generation. Relies on ExcelJS and pagetype.js, loaded before it in index.html.
 
-const HEADER_FILL = 'FF111564';
+const HEADER_FILL = 'FF1D2C3F'; // DEC logo navy
 const STATUS_FILLS = { OK: 'FFD9EAD3', ERROR: 'FFF4CCCC' };
 const COLUMN_WIDTHS = [60, 14, 14, 30, 30, 26, 30, 40];
 

@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>SEO Doctor | DEC</title>
     <link rel="icon" type="image/png" href="assets/dec-logo.png" />
+    <link rel="stylesheet" href="css/fonts.css" />
     <link rel="stylesheet" href="css/styles.css" />
     <script defer src="vendor/papaparse.min.js"></script>
     <script defer src="vendor/exceljs.min.js"></script>
@@ -16,94 +17,110 @@
     <script defer src="js/step-xml.js"></script>
   </head>
   <body>
-    <header class="app-header">
-      <h1>
-        SEO DOCTOR <span class="divider" aria-hidden="true">|</span>
-        <img class="logo" src="assets/dec-logo.png" alt="DEC" />
+    <header class="masthead">
+      <h1 class="lockup">
+        <span class="wordmark">SEO Doctor</span>
+        <img class="logo" src="assets/dec-logo.png" alt="DEC, Digital Excellence Campus" />
       </h1>
     </header>
 
     <div class="layout">
-      <nav class="sidebar" aria-label="Tools">
-        <button class="tool active" type="button" aria-current="page">Page Type</button>
-        <button class="tool" type="button" disabled>Coming soon</button>
-        <button class="tool" type="button" disabled>Coming soon</button>
+      <nav class="tools" aria-label="Tools">
+        <a class="tool" href="#page-type" aria-current="page">Page type</a>
+        <p class="tool-soon">More checks coming soon</p>
       </nav>
 
-      <main class="panel">
-        <div class="step-tabs" role="tablist" aria-label="Page Type steps">
-          <button class="step-tab" type="button" role="tab" data-step="report" aria-selected="true">
-            1. Create report
-          </button>
-          <button class="step-tab" type="button" role="tab" data-step="xml" aria-selected="false">
-            2. Generate XML
-          </button>
-        </div>
+      <main class="sheet" id="page-type">
+        <div class="sheet-inner">
+          <h2 class="tool-title">Page type</h2>
+          <p class="tool-intro">
+            Check that every page declares a valid GEO page type, send the gaps to the market, then
+            turn their answers into an import file.
+          </p>
 
-        <div id="step-report" role="tabpanel">
-          <section class="step">
-            <p>Please upload a valid crawl</p>
-            <p class="hint">
-              Screaming Frog export (.csv or .xlsx) with at least the columns Address, PLP ID 1,
-              PDP ID 1 and GEO Page Type 1. Extra columns are ignored.
-            </p>
-            <input type="file" id="crawl-file" accept=".csv,.xlsx" hidden />
-            <button id="upload-button" class="btn" type="button">Upload</button>
-            <span id="file-name" class="file-name"></span>
-            <span id="loading" class="loading" role="status" hidden>Reading file…</span>
-            <button id="clear-button" class="btn btn-secondary" type="button" hidden>New crawl</button>
-            <p id="upload-error" class="error" role="alert" hidden></p>
-          </section>
+          <div class="step-tabs" role="tablist" aria-label="Page type steps">
+            <button class="step-tab" type="button" role="tab" data-step="report" aria-selected="true">
+              <span class="step-num" aria-hidden="true">1</span> Create report
+            </button>
+            <button class="step-tab" type="button" role="tab" data-step="xml" aria-selected="false">
+              <span class="step-num" aria-hidden="true">2</span> Generate XML
+            </button>
+          </div>
 
-          <section id="result" class="step" hidden>
-            <p class="success">Your template is ready</p>
-            <p>
-              We found <strong id="incorrect-count">0</strong> <span id="incorrect-noun">pages</span>
-              with incorrect page type
-              <span class="hint">(out of <span id="total-count">0</span> <span id="total-noun">URLs</span>)</span>
-            </p>
-            <button id="download-button" class="btn btn-large" type="button">Download Report</button>
-          </section>
-        </div>
-
-        <div id="step-xml" role="tabpanel" hidden>
-          <section class="step">
-            <p>Please upload the report completed by the market</p>
-            <p class="hint">
-              .xlsx or .csv with the columns Address, Page Designer ID (or Page Designer 1) and
-              GEO Page Type to Implement. Only rows with a Page Designer ID are included in the XML.
-            </p>
-            <input type="file" id="xml-file" accept=".csv,.xlsx" hidden />
-            <button id="xml-upload-button" class="btn" type="button">Upload</button>
-            <span id="xml-file-name" class="file-name"></span>
-            <span id="xml-loading" class="loading" role="status" hidden>Reading file…</span>
-            <button id="xml-clear-button" class="btn btn-secondary" type="button" hidden>New file</button>
-            <p id="xml-upload-error" class="error" role="alert" hidden></p>
-          </section>
-
-          <section id="xml-result" class="step" hidden>
-            <p><strong id="xml-count">0</strong> <span id="xml-count-noun">pages</span> will be updated in the XML</p>
-
-            <fieldset class="locales">
-              <legend>Locales <span class="hint">(x-default is always included)</span></legend>
-              <div id="xml-locales" class="locale-grid"></div>
-            </fieldset>
-            <p id="xml-locale-hint" class="hint">Select at least one locale.</p>
-
-            <div id="xml-skipped" class="skipped" hidden>
-              <p class="warning"><strong id="xml-skipped-count">0</strong> <span id="xml-skipped-noun">rows were</span> skipped</p>
-              <div class="table-wrap">
-                <table>
-                  <thead>
-                    <tr><th>Address</th><th>Page Designer ID</th><th>Value</th><th>Reason</th></tr>
-                  </thead>
-                  <tbody id="xml-skipped-rows"></tbody>
-                </table>
+          <div id="step-report" role="tabpanel">
+            <section class="intake">
+              <input type="file" id="crawl-file" accept=".csv,.xlsx" hidden />
+              <button id="upload-button" class="dropzone" type="button" aria-describedby="crawl-help">
+                <span class="dropzone-title">Drop the Screaming Frog crawl here</span>
+                <span class="dropzone-sub">or click to choose a .csv or .xlsx file</span>
+              </button>
+              <p id="crawl-help" class="hint">
+                Needs the columns Address, PLP ID 1, PDP ID 1 and GEO Page Type 1. Other columns are
+                ignored.
+              </p>
+              <div class="file-row">
+                <span id="file-name" class="file-name"></span>
+                <span id="loading" class="loading" role="status" hidden>Reading file…</span>
+                <button id="clear-button" class="btn btn-quiet" type="button" hidden>New crawl</button>
               </div>
-            </div>
+              <p id="upload-error" class="error" role="alert" hidden></p>
+            </section>
 
-            <button id="xml-download-button" class="btn btn-large" type="button" disabled>Download XML</button>
-          </section>
+            <section id="result" class="diagnosis" aria-live="polite" hidden>
+              <p id="result-site" class="patient"></p>
+              <p id="finding" class="finding"></p>
+              <p id="advice" class="advice"></p>
+              <button id="download-button" class="btn btn-primary" type="button">Download report</button>
+            </section>
+          </div>
+
+          <div id="step-xml" role="tabpanel" hidden>
+            <section class="intake">
+              <input type="file" id="xml-file" accept=".csv,.xlsx" hidden />
+              <button id="xml-upload-button" class="dropzone" type="button" aria-describedby="xml-help">
+                <span class="dropzone-title">Drop the report completed by the market here</span>
+                <span class="dropzone-sub">or click to choose a .csv or .xlsx file</span>
+              </button>
+              <p id="xml-help" class="hint">
+                Needs the columns Address, Page Designer ID (or Page Designer 1) and GEO Page Type to
+                Implement. Only pages with a Page Designer ID go into the XML.
+              </p>
+              <div class="file-row">
+                <span id="xml-file-name" class="file-name"></span>
+                <span id="xml-loading" class="loading" role="status" hidden>Reading file…</span>
+                <button id="xml-clear-button" class="btn btn-quiet" type="button" hidden>New file</button>
+              </div>
+              <p id="xml-upload-error" class="error" role="alert" hidden></p>
+            </section>
+
+            <section id="xml-result" class="diagnosis" aria-live="polite" hidden>
+              <p id="xml-site" class="patient"></p>
+              <p id="xml-finding" class="finding"></p>
+              <p id="xml-advice" class="advice"></p>
+
+              <div id="xml-skipped" class="skipped" hidden>
+                <p class="skipped-title" id="xml-skipped-title"></p>
+                <div class="table-wrap">
+                  <table>
+                    <thead>
+                      <tr><th>Address</th><th>Page Designer ID</th><th>Value</th><th>Reason</th></tr>
+                    </thead>
+                    <tbody id="xml-skipped-rows"></tbody>
+                  </table>
+                </div>
+              </div>
+
+              <fieldset id="xml-locale-set" class="locales">
+                <legend>Locales <span class="hint">x-default is always included</span></legend>
+                <div id="xml-locales" class="locale-grid"></div>
+              </fieldset>
+
+              <div class="action-row">
+                <button id="xml-download-button" class="btn btn-primary" type="button" disabled>Download XML</button>
+                <span id="xml-locale-hint" class="hint">Tick at least one locale to download.</span>
+              </div>
+            </section>
+          </div>
         </div>
       </main>
     </div>

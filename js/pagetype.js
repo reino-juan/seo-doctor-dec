@@ -86,10 +86,16 @@ function validate(records) {
  * https://www.skinceuticals.nl/ -> SKINCEUTICALS_NL_Page_Categorization.xlsx
  */
 function reportFileName(firstUrl) {
-  const domain = String(firstUrl ?? '')
-    .trim()
-    .replace(/^(https?:\/\/)?(www\.)?/i, '')
-    .split('/')[0];
+  const domain = siteName(firstUrl);
   const name = domain ? domain.replace(/\./g, '_').toUpperCase() : 'Export';
   return `${name}_Page_Categorization.xlsx`;
+}
+
+/** https://www.lancome.es/maquillaje/ -> lancome.es ('' if there is no URL). */
+function siteName(url) {
+  return String(url ?? '')
+    .trim()
+    .replace(/^(https?:\/\/)?(www\.)?/i, '')
+    .split('/')[0]
+    .toLowerCase();
 }
