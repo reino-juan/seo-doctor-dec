@@ -6,6 +6,7 @@
   --brand-hover: #133060;
   --success: #2e8b3e;
   --error: #c62828;
+  --warning: #b26a00;
   --bg: #fff;
 }
 
@@ -114,8 +115,8 @@ body {
 }
 
 .btn:disabled {
-  opacity: 0.6;
-  cursor: wait;
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .btn-secondary {
@@ -150,6 +151,88 @@ body {
 
 .error {
   color: var(--error);
+}
+
+.warning {
+  color: var(--warning);
+}
+
+.step-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 32px;
+  border-bottom: 1px solid var(--line);
+}
+
+.step-tab {
+  padding: 10px 16px;
+  border: none;
+  border-bottom: 3px solid transparent;
+  background: none;
+  color: var(--muted);
+  font: inherit;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.step-tab[aria-selected='true'] {
+  color: var(--brand);
+  border-bottom-color: var(--brand);
+}
+
+.locales {
+  margin: 24px 0 0;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.locale-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: 8px;
+}
+
+.locale {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.skipped {
+  margin-bottom: 24px;
+}
+
+.table-wrap {
+  max-height: 280px;
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.skipped table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.skipped th,
+.skipped td {
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  vertical-align: top;
+}
+
+.skipped th {
+  position: sticky;
+  top: 0;
+  background: #f5f5f5;
+}
+
+.skipped td:first-child {
+  word-break: break-all;
 }
 
 @media (max-width: 720px) {

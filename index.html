@@ -10,7 +10,10 @@
     <script defer src="vendor/exceljs.min.js"></script>
     <script defer src="js/pagetype.js"></script>
     <script defer src="js/report.js"></script>
+    <script defer src="js/xml.js"></script>
     <script defer src="js/app.js"></script>
+    <script defer src="js/step-report.js"></script>
+    <script defer src="js/step-xml.js"></script>
   </head>
   <body>
     <header class="app-header">
@@ -28,27 +31,77 @@
       </nav>
 
       <main class="panel">
-        <section class="step">
-          <p>Please upload a valid crawl</p>
-          <p class="hint">
-            Screaming Frog export (.csv or .xlsx) with at least the columns Address, PLP ID 1,
-            PDP ID 1 and GEO Page Type 1. Extra columns are ignored.
-          </p>
-          <input type="file" id="crawl-file" accept=".csv,.xlsx" hidden />
-          <button id="upload-button" class="btn" type="button">Upload</button>
-          <span id="file-name" class="file-name"></span>
-          <button id="clear-button" class="btn btn-secondary" type="button" hidden>New crawl</button>
-          <p id="upload-error" class="error" role="alert" hidden></p>
-        </section>
+        <div class="step-tabs" role="tablist" aria-label="Page Type steps">
+          <button class="step-tab" type="button" role="tab" data-step="report" aria-selected="true">
+            1. Create report
+          </button>
+          <button class="step-tab" type="button" role="tab" data-step="xml" aria-selected="false">
+            2. Generate XML
+          </button>
+        </div>
 
-        <section id="result" class="step" hidden>
-          <p class="success">Your template is ready</p>
-          <p>
-            We found <strong id="incorrect-count">0</strong> pages with incorrect page type
-            <span class="hint">(out of <span id="total-count">0</span> URLs)</span>
-          </p>
-          <button id="download-button" class="btn btn-large" type="button">Download Report</button>
-        </section>
+        <div id="step-report" role="tabpanel">
+          <section class="step">
+            <p>Please upload a valid crawl</p>
+            <p class="hint">
+              Screaming Frog export (.csv or .xlsx) with at least the columns Address, PLP ID 1,
+              PDP ID 1 and GEO Page Type 1. Extra columns are ignored.
+            </p>
+            <input type="file" id="crawl-file" accept=".csv,.xlsx" hidden />
+            <button id="upload-button" class="btn" type="button">Upload</button>
+            <span id="file-name" class="file-name"></span>
+            <button id="clear-button" class="btn btn-secondary" type="button" hidden>New crawl</button>
+            <p id="upload-error" class="error" role="alert" hidden></p>
+          </section>
+
+          <section id="result" class="step" hidden>
+            <p class="success">Your template is ready</p>
+            <p>
+              We found <strong id="incorrect-count">0</strong> pages with incorrect page type
+              <span class="hint">(out of <span id="total-count">0</span> URLs)</span>
+            </p>
+            <button id="download-button" class="btn btn-large" type="button">Download Report</button>
+          </section>
+        </div>
+
+        <div id="step-xml" role="tabpanel" hidden>
+          <section class="step">
+            <p>Please upload the report completed by the market</p>
+            <p class="hint">
+              .xlsx or .csv with the columns Address, Page Designer ID (or Page Designer 1) and
+              GEO Page Type to Implement. Only rows with a Page Designer ID are included in the XML.
+            </p>
+            <input type="file" id="xml-file" accept=".csv,.xlsx" hidden />
+            <button id="xml-upload-button" class="btn" type="button">Upload</button>
+            <span id="xml-file-name" class="file-name"></span>
+            <button id="xml-clear-button" class="btn btn-secondary" type="button" hidden>New file</button>
+            <p id="xml-upload-error" class="error" role="alert" hidden></p>
+          </section>
+
+          <section id="xml-result" class="step" hidden>
+            <p><strong id="xml-count">0</strong> pages will be updated in the XML</p>
+
+            <fieldset class="locales">
+              <legend>Locales <span class="hint">(x-default is always included)</span></legend>
+              <div id="xml-locales" class="locale-grid"></div>
+            </fieldset>
+            <p id="xml-locale-hint" class="hint">Select at least one locale.</p>
+
+            <div id="xml-skipped" class="skipped" hidden>
+              <p class="warning"><strong id="xml-skipped-count">0</strong> rows were skipped</p>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr><th>Address</th><th>Page Designer ID</th><th>Value</th><th>Reason</th></tr>
+                  </thead>
+                  <tbody id="xml-skipped-rows"></tbody>
+                </table>
+              </div>
+            </div>
+
+            <button id="xml-download-button" class="btn btn-large" type="button" disabled>Download XML</button>
+          </section>
+        </div>
       </main>
     </div>
   </body>

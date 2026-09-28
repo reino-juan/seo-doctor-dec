@@ -32,32 +32,34 @@ const ACCEPTED_PAGE_TYPES = [
 const normalize = (value) => String(value ?? '').replace(/^﻿/, '').trim().toLowerCase();
 
 /**
- * Maps raw crawl rows (array of arrays, first matching row = headers) to records
- * keyed by COLUMNS. Screaming Frog sometimes prepends a title line, so the header
- * row is the first one containing "Address".
+ * Maps raw rows (array of arrays) to records keyed by the spec names.
+ * Screaming Frog sometimes prepends a title line, so the header row is the first
+ * one containing "Address"; rows without an Address are dropped.
  * Returns { records, missing } where `missing` lists required headers not found.
  */
-function mapCrawl(rows) {
-  const required = COLUMN_SPECS.filter((spec) => spec.required).map((spec) => spec.name);
+function mapColumns(rows, specs) {
+  const required = specs.filter((spec) => spec.required).map((spec) => spec.name);
   const headerIndex = rows.findIndex((row) => row.some((cell) => normalize(cell) === 'address'));
   if (headerIndex === -1) return { records: [], missing: required };
 
   const headers = rows[headerIndex].map(normalize);
-  const positions = COLUMN_SPECS.map((spec) =>
+  const positions = specs.map((spec) =>
     [spec.name, ...(spec.aliases ?? [])].map((name) => headers.indexOf(normalize(name))).find((i) => i !== -1) ?? -1
   );
-  const missing = COLUMN_SPECS.filter((spec, i) => spec.required && positions[i] === -1).map((spec) => spec.name);
+  const missing = specs.filter((spec, i) => spec.required && positions[i] === -1).map((spec) => spec.name);
   if (missing.length) return { records: [], missing };
 
   const records = rows
     .slice(headerIndex + 1)
     .map((row) =>
-      Object.fromEntries(COLUMNS.map((col, i) => [col, positions[i] === -1 ? '' : String(row[positions[i]] ?? '').trim()]))
+      Object.fromEntries(specs.map((spec, i) => [spec.name, positions[i] === -1 ? '' : String(row[positions[i]] ?? '').trim()]))
     )
     .filter((record) => record.Address !== '');
 
   return { records, missing: [] };
 }
+
+const mapCrawl = (rows) => mapColumns(rows, COLUMN_SPECS);
 
 /**
  * Returns the status for each record: 'OK', 'ERROR' or '' (incorrect, to be filled by the market).

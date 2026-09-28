@@ -6,6 +6,8 @@ CLAUDE.md
 examples/
 docs/
 PagetypeAppscript*
+Pagetype_Step*/
+DEC_logo.png
 *.png
 *.jpg
 *.xlsx
