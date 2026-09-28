@@ -1,0 +1,206 @@
+# Maintaining SEO Doctor | DEC
+
+A handover guide for whoever looks after this app. It explains what the app does, how it is
+built, how to change the most common things, how to check that nothing broke, and how to
+release a new version.
+
+Original author: Juan Reino (2026). No other tools or accounts are needed to work on it:
+a text editor, a browser and Git are enough.
+
+---
+
+## 1. What the app does
+
+SEO Doctor checks the **GEO page type** that every page of a market's website declares in its
+dataLayer (the value the 4CAST score relies on). It replaces two Google Sheets + Apps Script
+templates. The work happens in two steps, shown as two tabs in the **Page type** tool.
+
+**Step 1 – Create report**
+
+1. Upload a **Screaming Frog crawl** (`.csv` or `.xlsx`, custom extraction).
+2. The app checks each page's page type and shows how many need fixing,
+   e.g. "*62 of 213 pages need a page type.*"
+3. Download the **Excel report** (`LANCOME_ES_Page_Categorization.xlsx`) and send it to the
+   market. Pages without a valid page type are left empty, with a dropdown of accepted values.
+
+**Step 2 – Generate XML**
+
+4. The market sends the completed report back. Upload it in the second tab.
+5. Tick the locales of the site and download the **Salesforce Commerce Cloud library import
+   XML** (`PageType_Update_YYYYMMDD_HHMM.xml`). It sets the `pageCategory` of each Page
+   Designer page.
+
+Everything runs **in the browser**. Crawl data is never sent anywhere.
+
+---
+
+## 2. How it is built
+
+- **Plain HTML, CSS and JavaScript.** No framework, no build step, no server, no database,
+  no Node.js. To host it, copy the files anywhere that serves static files.
+- It must keep working when `index.html` is opened by **double-clicking** it (a `file://`
+  page, offline). This rules out a few common techniques. Please keep to these rules:
+  - **No ES modules** (`import` / `export`). Scripts are ordinary `<script defer>` tags,
+    loaded in dependency order in `index.html`, and share the global scope.
+  - **No CDN links and no `fetch()` of local files.** Libraries live in `vendor/`.
+  - **Fonts are embedded as base64 in `css/fonts.css`.** Chrome refuses font files from
+    `file://` pages. Don't replace them with links to font files or Google Fonts.
+- Libraries (both MIT licence, committed in `vendor/`):
+  - **PapaParse 5.4.1**: reads CSV files.
+  - **ExcelJS 4.4.0**: reads `.xlsx` files and writes the Excel report (dropdowns, colours).
+
+### Files
+
+```
+index.html          Page layout, the list of scripts (order matters) and the footer version
+css/styles.css      All styles (colours and type scale are variables at the top)
+css/fonts.css       Archivo + Bodoni Moda fonts, embedded (SIL Open Font License)
+assets/dec-logo.png DEC logo (header + browser tab icon)
+assets/flags/       One SVG flag per country (from the flag-icons package, MIT)
+vendor/             PapaParse and ExcelJS
+
+js/pagetype.js      RULES: accepted page types, crawl columns, Step 1 checks, file names
+js/xml.js           RULES: Step 2 row selection, locale list, XML format
+js/report.js        Builds the Step 1 Excel report
+js/app.js           Shared helpers: read a file, download, drag and drop, step tabs, wording
+js/step-report.js   Step 1 screen (upload, result, download)
+js/step-xml.js      Step 2 screen (upload, locales, skipped rows, download)
+```
+
+The **rules** files (`pagetype.js`, `xml.js`) never touch the page. They take data in and give
+data back, which keeps them easy to read and test. The **screen** files (`step-*.js`) only
+handle the page. They are each wrapped in `(() => { ... })();` so their variable names don't
+clash with each other.
+
+---
+
+## 3. The rules
+
+### Crawl columns (Step 1), `COLUMN_SPECS` in `js/pagetype.js`
+
+Headers are matched ignoring upper/lower case. Every other column in the crawl is ignored.
+
+| Column            | Also accepted        | Required | Used for                          |
+|-------------------|----------------------|----------|-----------------------------------|
+| `Address`         |                      | yes      | Page URL                          |
+| `PLP ID 1`        |                      | yes      | Confirms a product listing page   |
+| `PDP ID 1`        |                      | yes      | Confirms a product detail page    |
+| `Content Asset 1` | `CONTENT ASSET ID 1` | no       | Copied to the report              |
+| `Page Designer 1` | `PAGE DESIGNER ID 1` | no       | Copied to the report (Step 2 key) |
+| `GEO Page Type 1` |                      | yes      | The value being checked           |
+
+### Accepted page types (the "Master Key"), `ACCEPTED_PAGE_TYPES` in `js/pagetype.js`
+
+| Bucket         | Value(s)                                                                  |
+|----------------|---------------------------------------------------------------------------|
+| Homepage       | `homepage`                                                                |
+| PLP            | `product selector page`                                                   |
+| PDP            | `product detail page`                                                     |
+| Editorial page | `content page::article`                                                   |
+| Landing page   | `content page::branding page`, `content page::service`, `service::guide`  |
+| Others         | anything else, empty, or wrong (not scorable)                             |
+
+### Step 1 checks, `validate()` in `js/pagetype.js`
+
+- `product selector page` is OK only if the page has a `PLP ID 1`.
+- `product detail page` is OK only if the page has a `PDP ID 1`.
+- `homepage` is OK only if exactly one page in the crawl has it. Otherwise it's marked **ERROR**.
+- The editorial and landing values are always OK.
+- Anything else is left **empty** for the market to fill in.
+
+The count shown on screen is the number of pages that are empty or ERROR.
+
+### Step 2 XML, `js/xml.js`
+
+- Reads `Address`, `Page Designer ID` (or `Page Designer 1`) and `GEO Page Type to Implement`.
+- A page goes into the XML only if it has a **Page Designer ID** (used as `content-id`) and the
+  market chose a value other than empty or `OK`.
+- The value must be a Master Key value or `others`. Anything else is **left out and listed on
+  screen**. So are pages that share a Page Designer ID but have different values.
+- `x-default` is always written, followed by the ticked locales.
+- **Known limitation:** pages that only have a Content Asset ID are not included yet.
+
+XML format, which must stay exactly like this:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<library xmlns="http://www.demandware.com/xml/impex/library/2006-10-31">
+	<content content-id="transparencia">
+		<data xml:lang="x-default">{ "stylesheetID" : "content", "pageCategory" : "content page::branding page" } </data>
+		<data xml:lang="es-ES">{ "stylesheetID" : "content", "pageCategory" : "content page::branding page" } </data>
+	</content>
+</library>
+```
+
+---
+
+## 4. Common changes
+
+| I want to…                              | Change this                                                                 |
+|-----------------------------------------|-----------------------------------------------------------------------------|
+| Accept a new page type value            | `ACCEPTED_PAGE_TYPES` in `js/pagetype.js`. It updates the Excel dropdown and the XML check. |
+| Accept a new crawl column name          | Add it to `aliases` in `COLUMN_SPECS` (`js/pagetype.js`)                    |
+| Accept a new column name in Step 2      | Add it to `aliases` in `XML_COLUMN_SPECS` (`js/xml.js`)                     |
+| Add a locale                            | Add it to `XML_LOCALES` in `js/xml.js`. If the country is new, add its flag as `assets/flags/<country>.svg` (4x3 SVG from the flag-icons package, lowercase code, e.g. `pt.svg`). |
+| Change a text on screen                 | `index.html` (fixed text) or `js/step-report.js` / `js/step-xml.js` (results) |
+| Change colours or fonts sizes           | Variables at the top of `css/styles.css`                                    |
+| Add a new tool to the sidebar           | New rules file + screen file in `js/`, a section in `index.html`, a link in the sidebar, and the `<script>` tags in the right order |
+
+Design rules the app follows. Please keep to them so it stays consistent:
+- Navy `#1d2c3f` (from the logo) for text and buttons.
+- Red `#a8233a` only for counts that need fixing.
+- Sentence case, not capitals.
+- Any number shown to users uses `plural()` from `js/app.js`, so it reads "1 page", not "1 pages".
+
+---
+
+## 5. Checking that nothing broke
+
+There are no automated tests. Before releasing, open the app and run these files. They are in
+the **handover zip** (`examples/` folder), not in GitHub, because they contain real crawl data.
+
+| Step | File                                    | Expected result                                   |
+|------|-----------------------------------------|---------------------------------------------------|
+| 1    | `mugler_fr_crawl.csv`                   | "62 of 252 pages need a page type." (mugler.fr)   |
+| 1    | `lancome_es_custom_extraction_all.csv`  | "62 of 213 pages need a page type." (lancome.es)  |
+| 2    | `lancome_es_completed.csv`              | "196 pages will get their new page type."         |
+
+`lancome_es_expected_entries.json` lists the exact 196 `content-id → page type` pairs that the
+original Google Sheet produced for that file. The Step 2 XML must contain exactly those.
+
+Also check quickly:
+- Download the Excel report and open it. The dropdown appears on the empty cells.
+- Tick a locale and download the XML. It opens in a browser without errors.
+- Open `index.html` by **double-clicking** it (not through a web server). Fonts, logo and
+  flags all show.
+
+---
+
+## 6. Releasing a new version
+
+1. Make the change and run the checks in section 5.
+2. Update the version in the footer of `index.html` (`Version x.y.z`):
+   - **x.y.z+1** for fixes and wording
+   - **x.y+1.0** for new features (new locale, new tool)
+   - **x+1.0.0** when the Excel report or XML format changes (people's files change)
+3. Commit and push to GitHub.
+4. Update the hosted copy: upload the new files (or redeploy) wherever the app is hosted.
+
+Version history: see `git log`.
+
+---
+
+## 7. Where things are
+
+- **Code:** GitHub repository `seo-doctor-dec`. Everything needed to run the app is in it,
+  and nothing else.
+- **Handover zip** (keep it on a team shared drive, not in GitHub):
+  - `examples/`: test files and expected results (section 5).
+  - `legacy/`: the original Google Sheets templates, their Apps Script, the "Master Key" image,
+    the wireframe and the logo source.
+  - `CLAUDE.md`: the same knowledge as this file, written for the Claude Code AI assistant.
+    If you use Claude Code, put it in the project folder and Claude will follow it
+    automatically.
+  - `code/`: a snapshot of the repository at handover time.
+- **Hosting:** fill in when decided (who hosts it, the URL, and how to update it).
+- **Contact / owner:** fill in after handover (and update the footer in `index.html`).

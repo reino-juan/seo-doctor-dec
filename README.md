@@ -11,3 +11,8 @@ To share it, zip the folder and send it.
 Libraries are bundled in `vendor/`: PapaParse 5.4.1 and ExcelJS 4.4.0 (both MIT).
 
 All processing happens in the browser; uploaded crawls are never sent to a server.
+
+## Maintaining
+
+See [MAINTAINING.md](MAINTAINING.md) for how the app works, how to change it, how to test it
+and how to release a new version.

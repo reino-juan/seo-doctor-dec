@@ -5,6 +5,8 @@ CLAUDE.md
 # Reference material & samples (local only)
 examples/
 docs/
+dist/
+*.zip
 PagetypeAppscript*
 Pagetype_Step*/
 DEC_logo.png
