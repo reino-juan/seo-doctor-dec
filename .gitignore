@@ -1,0 +1,19 @@
+# Claude / assistant docs
+CLAUDE.md
+.claude/
+
+# Reference material & samples (local only)
+examples/
+docs/
+PagetypeAppscript*
+*.png
+*.jpg
+*.xlsx
+*.xls
+*.csv
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

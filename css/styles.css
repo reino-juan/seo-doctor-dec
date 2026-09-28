@@ -1,0 +1,153 @@
+:root {
+  --ink: #1a1a1a;
+  --muted: #666;
+  --line: #d9d9d9;
+  --brand: #111564;
+  --brand-hover: #133060;
+  --success: #2e8b3e;
+  --error: #c62828;
+  --bg: #fff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  color: var(--ink);
+  background: var(--bg);
+}
+
+.app-header {
+  padding: 28px 40px;
+  border-bottom: 1px solid var(--line);
+}
+
+.app-header h1 {
+  margin: 0;
+  font-size: 28px;
+  letter-spacing: 0.04em;
+}
+
+.divider {
+  color: var(--muted);
+  font-weight: normal;
+}
+
+.layout {
+  display: flex;
+  min-height: calc(100vh - 90px);
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 260px;
+  padding: 32px 24px;
+  border-right: 2px solid var(--ink);
+}
+
+.tool {
+  padding: 16px 20px;
+  border: 1.5px solid var(--ink);
+  border-radius: 10px;
+  background: var(--bg);
+  font: inherit;
+  font-weight: bold;
+  text-align: left;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.tool.active {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: #fff;
+}
+
+.tool:disabled {
+  color: var(--muted);
+  border-color: var(--line);
+  font-weight: normal;
+  text-transform: none;
+  cursor: default;
+}
+
+.panel {
+  flex: 1;
+  padding: 32px 64px;
+}
+
+.step {
+  margin-bottom: 64px;
+}
+
+.hint {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.btn {
+  padding: 10px 24px;
+  border: none;
+  border-radius: 8px;
+  background: var(--brand);
+  color: #fff;
+  font: inherit;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background: var(--brand-hover);
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.btn-large {
+  padding: 20px 32px;
+  border-radius: 14px;
+}
+
+.file-name {
+  margin-left: 12px;
+  color: var(--muted);
+}
+
+.success {
+  color: var(--success);
+  font-weight: bold;
+}
+
+.error {
+  color: var(--error);
+}
+
+@media (max-width: 720px) {
+  .app-header {
+    padding: 20px 16px;
+  }
+
+  .layout {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: auto;
+    flex-direction: row;
+    overflow-x: auto;
+    padding: 16px;
+    border-right: none;
+    border-bottom: 2px solid var(--ink);
+  }
+
+  .panel {
+    padding: 24px 16px;
+  }
+}

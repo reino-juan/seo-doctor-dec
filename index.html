@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SEO Doctor | DEC</title>
+    <link rel="stylesheet" href="css/styles.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
+    <script type="module" src="js/app.js"></script>
+  </head>
+  <body>
+    <header class="app-header">
+      <h1>SEO DOCTOR <span class="divider">|</span> DEC</h1>
+    </header>
+
+    <div class="layout">
+      <nav class="sidebar" aria-label="Tools">
+        <button class="tool active" type="button" aria-current="page">Page Type</button>
+        <button class="tool" type="button" disabled>Coming soon</button>
+        <button class="tool" type="button" disabled>Coming soon</button>
+      </nav>
+
+      <main class="panel">
+        <section class="step">
+          <p>Please upload a valid crawl</p>
+          <p class="hint">
+            Screaming Frog export (.csv or .xlsx) with the columns Address, PLP ID 1, PDP ID 1,
+            Content Asset 1, Page Designer 1 and GEO Page Type 1.
+          </p>
+          <input type="file" id="crawl-file" accept=".csv,.xlsx" hidden />
+          <button id="upload-button" class="btn" type="button">Upload</button>
+          <span id="file-name" class="file-name"></span>
+          <p id="upload-error" class="error" role="alert" hidden></p>
+        </section>
+
+        <section id="result" class="step" hidden>
+          <p class="success">Your template is ready</p>
+          <p>
+            We found <strong id="incorrect-count">0</strong> pages with incorrect page type
+            <span class="hint">(out of <span id="total-count">0</span> URLs)</span>
+          </p>
+          <button id="download-button" class="btn btn-large" type="button">Download Report</button>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>
