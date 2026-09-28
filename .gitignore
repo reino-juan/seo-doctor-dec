@@ -17,3 +17,7 @@ PagetypeAppscript*
 Thumbs.db
 .vscode/
 .idea/
+
+# App assets needed at runtime (override the image rules above)
+!assets/
+!assets/**
