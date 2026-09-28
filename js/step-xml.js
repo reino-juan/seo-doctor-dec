@@ -4,22 +4,28 @@
   const fileInput = document.getElementById('xml-file');
   const uploadButton = document.getElementById('xml-upload-button');
   const fileName = document.getElementById('xml-file-name');
+  const loading = document.getElementById('xml-loading');
   const clearButton = document.getElementById('xml-clear-button');
   const errorBox = document.getElementById('xml-upload-error');
   const resultBox = document.getElementById('xml-result');
   const entryCount = document.getElementById('xml-count');
+  const entryNoun = document.getElementById('xml-count-noun');
   const localeList = document.getElementById('xml-locales');
   const localeHint = document.getElementById('xml-locale-hint');
   const skippedBox = document.getElementById('xml-skipped');
   const skippedCount = document.getElementById('xml-skipped-count');
+  const skippedNoun = document.getElementById('xml-skipped-noun');
   const skippedRows = document.getElementById('xml-skipped-rows');
   const downloadButton = document.getElementById('xml-download-button');
 
   let entries = [];
 
-  localeList.innerHTML = XML_LOCALES.map(
-    (locale) => `<label class="locale"><input type="checkbox" value="${locale}" /> ${locale}</label>`
-  ).join('');
+  // Flag = country part of the locale (es-ES -> assets/flags/es.svg).
+  localeList.innerHTML = XML_LOCALES.map((locale) => {
+    const country = locale.split('-')[1].toLowerCase();
+    return `<label class="locale"><input type="checkbox" value="${locale}" />
+      <img class="flag" src="assets/flags/${country}.svg" alt="" width="20" height="15" /> ${locale}</label>`;
+  }).join('');
   const localeBoxes = [...localeList.querySelectorAll('input')];
   const selectedLocales = () => localeBoxes.filter((box) => box.checked).map((box) => box.value);
 
@@ -50,7 +56,8 @@
   async function handleFile(file) {
     reset();
     fileName.textContent = file.name;
-    clearButton.hidden = false;
+    loading.hidden = false;
+    uploadButton.disabled = true;
 
     try {
       const rows = await readRows(file);
@@ -62,17 +69,23 @@
       const result = buildXmlEntries(records);
       entries = result.entries;
       entryCount.textContent = entries.length;
+      entryNoun.textContent = plural(entries.length, 'page', 'pages');
       showSkipped(result.skipped);
       resultBox.hidden = false;
       updateDownload();
     } catch (err) {
       showError(`Could not read the file: ${err.message}`);
+    } finally {
+      loading.hidden = true;
+      uploadButton.disabled = false;
+      clearButton.hidden = false;
     }
   }
 
   function showSkipped(skipped) {
     skippedBox.hidden = skipped.length === 0;
     skippedCount.textContent = skipped.length;
+    skippedNoun.textContent = plural(skipped.length, 'row was', 'rows were');
     skippedRows.replaceChildren(
       ...skipped.map((row) => {
         const tr = document.createElement('tr');

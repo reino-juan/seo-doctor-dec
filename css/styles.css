@@ -144,6 +144,34 @@ body {
   color: var(--muted);
 }
 
+.loading {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: 12px;
+  color: var(--muted);
+}
+
+.loading[hidden] {
+  display: none;
+}
+
+.loading::before {
+  content: '';
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--line);
+  border-top-color: var(--brand);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .success {
   color: var(--success);
   font-weight: bold;
@@ -189,7 +217,7 @@ body {
 
 .locale-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(116px, 1fr));
   gap: 8px;
 }
 
@@ -198,6 +226,12 @@ body {
   align-items: center;
   gap: 6px;
   cursor: pointer;
+}
+
+.flag {
+  flex-shrink: 0;
+  border-radius: 2px;
+  box-shadow: 0 0 0 1px var(--line);
 }
 
 .skipped {

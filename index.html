@@ -50,6 +50,7 @@
             <input type="file" id="crawl-file" accept=".csv,.xlsx" hidden />
             <button id="upload-button" class="btn" type="button">Upload</button>
             <span id="file-name" class="file-name"></span>
+            <span id="loading" class="loading" role="status" hidden>Reading file…</span>
             <button id="clear-button" class="btn btn-secondary" type="button" hidden>New crawl</button>
             <p id="upload-error" class="error" role="alert" hidden></p>
           </section>
@@ -57,8 +58,9 @@
           <section id="result" class="step" hidden>
             <p class="success">Your template is ready</p>
             <p>
-              We found <strong id="incorrect-count">0</strong> pages with incorrect page type
-              <span class="hint">(out of <span id="total-count">0</span> URLs)</span>
+              We found <strong id="incorrect-count">0</strong> <span id="incorrect-noun">pages</span>
+              with incorrect page type
+              <span class="hint">(out of <span id="total-count">0</span> <span id="total-noun">URLs</span>)</span>
             </p>
             <button id="download-button" class="btn btn-large" type="button">Download Report</button>
           </section>
@@ -74,12 +76,13 @@
             <input type="file" id="xml-file" accept=".csv,.xlsx" hidden />
             <button id="xml-upload-button" class="btn" type="button">Upload</button>
             <span id="xml-file-name" class="file-name"></span>
+            <span id="xml-loading" class="loading" role="status" hidden>Reading file…</span>
             <button id="xml-clear-button" class="btn btn-secondary" type="button" hidden>New file</button>
             <p id="xml-upload-error" class="error" role="alert" hidden></p>
           </section>
 
           <section id="xml-result" class="step" hidden>
-            <p><strong id="xml-count">0</strong> pages will be updated in the XML</p>
+            <p><strong id="xml-count">0</strong> <span id="xml-count-noun">pages</span> will be updated in the XML</p>
 
             <fieldset class="locales">
               <legend>Locales <span class="hint">(x-default is always included)</span></legend>
@@ -88,7 +91,7 @@
             <p id="xml-locale-hint" class="hint">Select at least one locale.</p>
 
             <div id="xml-skipped" class="skipped" hidden>
-              <p class="warning"><strong id="xml-skipped-count">0</strong> rows were skipped</p>
+              <p class="warning"><strong id="xml-skipped-count">0</strong> <span id="xml-skipped-noun">rows were</span> skipped</p>
               <div class="table-wrap">
                 <table>
                   <thead>

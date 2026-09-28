@@ -20,6 +20,9 @@ async function readRows(file) {
   throw new Error('please upload a .csv or .xlsx file');
 }
 
+/** plural(1, 'page', 'pages') -> 'page'; plural(2, ...) -> 'pages'. */
+const plural = (count, one, many) => (count === 1 ? one : many);
+
 function downloadBlob(blob, name) {
   const link = document.createElement('a');
   link.href = URL.createObjectURL(blob);

@@ -4,10 +4,13 @@
   const fileInput = document.getElementById('crawl-file');
   const uploadButton = document.getElementById('upload-button');
   const fileName = document.getElementById('file-name');
+  const loading = document.getElementById('loading');
   const errorBox = document.getElementById('upload-error');
   const resultBox = document.getElementById('result');
   const incorrectCount = document.getElementById('incorrect-count');
+  const incorrectNoun = document.getElementById('incorrect-noun');
   const totalCount = document.getElementById('total-count');
+  const totalNoun = document.getElementById('total-noun');
   const downloadButton = document.getElementById('download-button');
   const clearButton = document.getElementById('clear-button');
 
@@ -45,7 +48,8 @@
   async function handleFile(file) {
     reset();
     fileName.textContent = file.name;
-    clearButton.hidden = false;
+    loading.hidden = false;
+    uploadButton.disabled = true;
 
     try {
       const rows = await readRows(file);
@@ -57,11 +61,18 @@
 
       const statuses = validate(records);
       report = { records, statuses };
-      incorrectCount.textContent = statuses.filter((s) => s !== 'OK').length;
+      const incorrect = statuses.filter((s) => s !== 'OK').length;
+      incorrectCount.textContent = incorrect;
+      incorrectNoun.textContent = plural(incorrect, 'page', 'pages');
       totalCount.textContent = records.length;
+      totalNoun.textContent = plural(records.length, 'URL', 'URLs');
       resultBox.hidden = false;
     } catch (err) {
       showError(`Could not read the file: ${err.message}`);
+    } finally {
+      loading.hidden = true;
+      uploadButton.disabled = false;
+      clearButton.hidden = false;
     }
   }
 
