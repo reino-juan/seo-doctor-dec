@@ -1,13 +1,18 @@
 // Page type rules: column mapping and validation. Pure functions, no DOM.
 
-const COLUMNS = [
-  'Address',
-  'PLP ID 1',
-  'PDP ID 1',
-  'Content Asset 1',
-  'Page Designer 1',
-  'GEO Page Type 1',
+// Columns kept from the crawl, in report order. Any other crawl column is ignored.
+// `aliases` are alternative header names used by other Screaming Frog extraction configs.
+// Optional columns are only informative (not used by the rules) and are left empty if missing.
+const COLUMN_SPECS = [
+  { name: 'Address', required: true },
+  { name: 'PLP ID 1', required: true },
+  { name: 'PDP ID 1', required: true },
+  { name: 'Content Asset 1', aliases: ['Content Asset ID 1'] },
+  { name: 'Page Designer 1', aliases: ['Page Designer ID 1'] },
+  { name: 'GEO Page Type 1', required: true },
 ];
+
+const COLUMNS = COLUMN_SPECS.map((spec) => spec.name);
 
 const STATUS_HEADER = 'GEO Page Type to Implement';
 const NOTES_HEADER = 'Notes';
@@ -23,7 +28,8 @@ const ACCEPTED_PAGE_TYPES = [
   'service::guide',
 ];
 
-const normalize = (value) => String(value ?? '').trim().toLowerCase();
+// Also strips a UTF-8 BOM, which Screaming Frog CSV exports start with.
+const normalize = (value) => String(value ?? '').replace(/^﻿/, '').trim().toLowerCase();
 
 /**
  * Maps raw crawl rows (array of arrays, first matching row = headers) to records
@@ -32,17 +38,22 @@ const normalize = (value) => String(value ?? '').trim().toLowerCase();
  * Returns { records, missing } where `missing` lists required headers not found.
  */
 function mapCrawl(rows) {
+  const required = COLUMN_SPECS.filter((spec) => spec.required).map((spec) => spec.name);
   const headerIndex = rows.findIndex((row) => row.some((cell) => normalize(cell) === 'address'));
-  if (headerIndex === -1) return { records: [], missing: [...COLUMNS] };
+  if (headerIndex === -1) return { records: [], missing: required };
 
   const headers = rows[headerIndex].map(normalize);
-  const positions = COLUMNS.map((col) => headers.indexOf(normalize(col)));
-  const missing = COLUMNS.filter((_, i) => positions[i] === -1);
+  const positions = COLUMN_SPECS.map((spec) =>
+    [spec.name, ...(spec.aliases ?? [])].map((name) => headers.indexOf(normalize(name))).find((i) => i !== -1) ?? -1
+  );
+  const missing = COLUMN_SPECS.filter((spec, i) => spec.required && positions[i] === -1).map((spec) => spec.name);
   if (missing.length) return { records: [], missing };
 
   const records = rows
     .slice(headerIndex + 1)
-    .map((row) => Object.fromEntries(COLUMNS.map((col, i) => [col, String(row[positions[i]] ?? '').trim()])))
+    .map((row) =>
+      Object.fromEntries(COLUMNS.map((col, i) => [col, positions[i] === -1 ? '' : String(row[positions[i]] ?? '').trim()]))
+    )
     .filter((record) => record.Address !== '');
 
   return { records, missing: [] };
