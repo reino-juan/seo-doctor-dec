@@ -1,0 +1,4 @@
+# Deploy only the app itself; keep internal docs off the public site.
+MAINTAINING.md
+README.md
+.gitignore
