@@ -38,6 +38,9 @@ body {
   color: var(--ink);
   background: var(--canvas);
   -webkit-font-smoothing: antialiased;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
 :focus-visible {
@@ -85,7 +88,7 @@ body {
 
 .layout {
   display: flex;
-  min-height: calc(100vh - 97px);
+  flex: 1;
 }
 
 .tools {
@@ -460,6 +463,32 @@ body {
   box-shadow: 0 0 0 1px var(--rule);
 }
 
+/* ---------- Footer ---------- */
+
+.footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 4px 24px;
+  padding: 16px 40px;
+  border-top: 1px solid var(--rule);
+  color: var(--slate);
+  font-size: var(--text-sm);
+}
+
+.footer p {
+  margin: 0;
+}
+
+.footer a {
+  color: var(--ink);
+  text-underline-offset: 2px;
+}
+
+.version {
+  font-variant-numeric: tabular-nums;
+}
+
 /* ---------- Small screens ---------- */
 
 @media (max-width: 760px) {
@@ -506,6 +535,10 @@ body {
 
   .sheet-inner {
     padding: 24px 16px 48px;
+  }
+
+  .footer {
+    padding: 16px;
   }
 
   .finding {
