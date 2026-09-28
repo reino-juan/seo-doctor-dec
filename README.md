@@ -5,11 +5,9 @@ and produces an Excel report that markets can complete offline.
 
 ## Run
 
-No build step. Serve the folder over HTTP and open it in a browser:
+No build step, no server, no internet needed: open `index.html` in a browser (double-click).
+To share it, zip the folder and send it.
 
-```bash
-python3 -m http.server 8000
-# http://localhost:8000
-```
+Libraries are bundled in `vendor/`: PapaParse 5.4.1 and ExcelJS 4.4.0 (both MIT).
 
 All processing happens in the browser; uploaded crawls are never sent to a server.

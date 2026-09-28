@@ -1,6 +1,6 @@
 // Page type rules: column mapping and validation. Pure functions, no DOM.
 
-export const COLUMNS = [
+const COLUMNS = [
   'Address',
   'PLP ID 1',
   'PDP ID 1',
@@ -9,11 +9,11 @@ export const COLUMNS = [
   'GEO Page Type 1',
 ];
 
-export const STATUS_HEADER = 'GEO Page Type to Implement';
-export const NOTES_HEADER = 'Notes';
+const STATUS_HEADER = 'GEO Page Type to Implement';
+const NOTES_HEADER = 'Notes';
 
 // The "Master Key": accepted dataLayer values per bucket.
-export const ACCEPTED_PAGE_TYPES = [
+const ACCEPTED_PAGE_TYPES = [
   'homepage',
   'product selector page',
   'product detail page',
@@ -31,7 +31,7 @@ const normalize = (value) => String(value ?? '').trim().toLowerCase();
  * row is the first one containing "Address".
  * Returns { records, missing } where `missing` lists required headers not found.
  */
-export function mapCrawl(rows) {
+function mapCrawl(rows) {
   const headerIndex = rows.findIndex((row) => row.some((cell) => normalize(cell) === 'address'));
   if (headerIndex === -1) return { records: [], missing: [...COLUMNS] };
 
@@ -51,7 +51,7 @@ export function mapCrawl(rows) {
 /**
  * Returns the status for each record: 'OK', 'ERROR' or '' (incorrect, to be filled by the market).
  */
-export function validate(records) {
+function validate(records) {
   const homepageCount = records.filter((r) => normalize(r['GEO Page Type 1']) === 'homepage').length;
 
   return records.map((record) => {
@@ -72,7 +72,7 @@ export function validate(records) {
 /**
  * https://www.skinceuticals.nl/ -> SKINCEUTICALS_NL_Page_Categorization.xlsx
  */
-export function reportFileName(firstUrl) {
+function reportFileName(firstUrl) {
   const domain = String(firstUrl ?? '')
     .trim()
     .replace(/^(https?:\/\/)?(www\.)?/i, '')

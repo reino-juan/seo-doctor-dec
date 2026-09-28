@@ -1,12 +1,11 @@
-// Excel report generation. Relies on the global ExcelJS loaded in index.html.
-import { COLUMNS, STATUS_HEADER, NOTES_HEADER, ACCEPTED_PAGE_TYPES } from './pagetype.js';
+// Excel report generation. Relies on ExcelJS and pagetype.js, loaded before it in index.html.
 
 const HEADER_FILL = 'FF111564';
 const STATUS_FILLS = { OK: 'FFD9EAD3', ERROR: 'FFF4CCCC' };
 const COLUMN_WIDTHS = [60, 14, 14, 30, 30, 26, 30, 40];
 
 /** Builds the MASTER workbook and returns it as a Blob. */
-export async function buildReport(records, statuses) {
+async function buildReport(records, statuses) {
   const workbook = new ExcelJS.Workbook();
   const sheet = workbook.addWorksheet('MASTER', { views: [{ state: 'frozen', ySplit: 1 }] });
 

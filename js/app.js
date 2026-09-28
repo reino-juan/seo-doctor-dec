@@ -1,6 +1,4 @@
-// UI wiring for the Page Type tool. Relies on the globals Papa and ExcelJS loaded in index.html.
-import { mapCrawl, validate, reportFileName } from './pagetype.js';
-import { buildReport } from './report.js';
+// UI wiring for the Page Type tool. Relies on Papa, ExcelJS, pagetype.js and report.js, loaded before it in index.html.
 
 const fileInput = document.getElementById('crawl-file');
 const uploadButton = document.getElementById('upload-button');
