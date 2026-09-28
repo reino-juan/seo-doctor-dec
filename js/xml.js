@@ -10,9 +10,11 @@ const XML_COLUMN_SPECS = [
 ];
 
 // Locales offered in the UI (from the legacy template). x-default is always included.
+// Display order: the five main markets first, then the rest by country population.
 const XML_LOCALES = [
-  'bg-BG', 'cs-CZ', 'da-DK', 'de-AT', 'de-CH', 'de-DE', 'en-GB', 'en-IE', 'es-ES', 'fr-BE', 'fr-CH', 'fr-FR',
-  'hr-HR', 'hu-HU', 'it-IT', 'nl-NL', 'no-NO', 'pl-PL', 'ro-RO', 'sk-SK', 'sl-SI', 'sr-RS', 'sv-SE',
+  'es-ES', 'fr-FR', 'en-GB', 'de-DE', 'it-IT',
+  'pl-PL', 'ro-RO', 'nl-NL', 'fr-BE', 'cs-CZ', 'sv-SE', 'hu-HU', 'de-AT', 'de-CH', 'fr-CH',
+  'sr-RS', 'bg-BG', 'da-DK', 'no-NO', 'sk-SK', 'en-IE', 'hr-HR', 'sl-SI',
 ];
 
 // Values a market may choose: the Master Key plus the intentional "others" bucket.
