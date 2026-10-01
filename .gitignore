@@ -17,6 +17,9 @@ DEC_logo.png
 *.csv
 
 # OS / editor
+# LibreOffice / Excel lock files while a spreadsheet is open
+.~lock.*#
+~$*
 .DS_Store
 Thumbs.db
 .vscode/
