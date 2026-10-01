@@ -1,11 +1,11 @@
 // Step 2: turn the report completed by a market into a Salesforce Commerce Cloud
 // library import XML. Pure functions, no DOM. Relies on pagetype.js.
 
-// Columns read from the completed report. Aliases cover the Step 1 export and the
-// legacy "PageType update XML in bulk" template.
+// Columns read from the completed report. Loose header matching (headerKey in pagetype.js)
+// covers the Step 1 export, the legacy "PageType update XML in bulk" template and market files.
 const XML_COLUMN_SPECS = [
   { name: 'Address', required: true },
-  { name: 'Page Designer ID', required: true, aliases: ['Page Designer 1', 'Page Designer ID 1'] },
+  { name: 'Page Designer ID', required: true }, // also matches "Page Designer 1", "PAGE DESIGNER"…
   { name: STATUS_HEADER, required: true },
 ];
 

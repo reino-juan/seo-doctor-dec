@@ -82,7 +82,9 @@ clash with each other.
 
 ### Crawl columns (Step 1), `COLUMN_SPECS` in `js/pagetype.js`
 
-Headers are matched ignoring upper/lower case. Every other column in the crawl is ignored.
+Headers are matched ignoring upper/lower case. A trailing "1" and the word "ID" are optional:
+`PLP ID 1`, `PLP ID`, `PLP 1` and `PLP` are all accepted, and so is `PAGE DESIGNER` for
+`Page Designer 1`. This also applies in Step 2. Every other column in the file is ignored.
 
 | Column            | Also accepted        | Required | Used for                          |
 |-------------------|----------------------|----------|-----------------------------------|
@@ -143,7 +145,7 @@ XML format, which must stay exactly like this:
 | I want to…                              | Change this                                                                 |
 |-----------------------------------------|-----------------------------------------------------------------------------|
 | Accept a new page type value            | `ACCEPTED_PAGE_TYPES` in `js/pagetype.js`. It updates the Excel dropdown and the XML check. |
-| Accept a new crawl column name          | Add it to `aliases` in `COLUMN_SPECS` (`js/pagetype.js`)                    |
+| Accept a new crawl column name          | Usually nothing to do (see the matching rule in section 3). For a name that differs in other ways, add it to `aliases` in `COLUMN_SPECS` (`js/pagetype.js`) |
 | Accept a new column name in Step 2      | Add it to `aliases` in `XML_COLUMN_SPECS` (`js/xml.js`)                     |
 | Add a locale                            | Add it to `XML_LOCALES` in `js/xml.js`. If the country is new, add its flag as `assets/flags/<country>.svg` (4x3 SVG from the flag-icons package, lowercase code, e.g. `pt.svg`). |
 | Change a text on screen                 | `index.html` (fixed text) or `js/step-report.js` / `js/step-xml.js` (results) |

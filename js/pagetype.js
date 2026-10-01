@@ -1,14 +1,15 @@
 // Page type rules: column mapping and validation. Pure functions, no DOM.
 
 // Columns kept from the crawl, in report order. Any other crawl column is ignored.
-// `aliases` are alternative header names used by other Screaming Frog extraction configs.
+// Headers also match without a trailing "1" or the word "ID" (see headerKey), so "PLP ID 1",
+// "PLP ID", "PLP 1" and "PLP" are the same column. `aliases` are for names that differ otherwise.
 // Optional columns are only informative (not used by the rules) and are left empty if missing.
 const COLUMN_SPECS = [
   { name: 'Address', required: true },
   { name: 'PLP ID 1', required: true },
   { name: 'PDP ID 1', required: true },
-  { name: 'Content Asset 1', aliases: ['Content Asset ID 1'] },
-  { name: 'Page Designer 1', aliases: ['Page Designer ID 1'] },
+  { name: 'Content Asset 1' },
+  { name: 'Page Designer 1' },
   { name: 'GEO Page Type 1', required: true },
 ];
 
@@ -31,6 +32,15 @@ const ACCEPTED_PAGE_TYPES = [
 // Also strips a UTF-8 BOM, which Screaming Frog CSV exports start with.
 const normalize = (value) => String(value ?? '').replace(/^﻿/, '').trim().toLowerCase();
 
+// Loose header form: drops a trailing "1" and the word "ID", so markets' own naming still matches.
+// "PLP ID 1" / "PLP ID" / "PLP 1" / "PLP" -> "plp"; "PLP ID 2" stays "plp 2" (a different column).
+const headerKey = (value) =>
+  normalize(value)
+    .replace(/\s+1$/, '')
+    .replace(/\bid\b/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+
 /**
  * Maps raw rows (array of arrays) to records keyed by the spec names.
  * Screaming Frog sometimes prepends a title line, so the header row is the first
@@ -43,9 +53,15 @@ function mapColumns(rows, specs) {
   if (headerIndex === -1) return { records: [], missing: required };
 
   const headers = rows[headerIndex].map(normalize);
-  const positions = specs.map((spec) =>
-    [spec.name, ...(spec.aliases ?? [])].map((name) => headers.indexOf(normalize(name))).find((i) => i !== -1) ?? -1
-  );
+  const keys = headers.map(headerKey);
+  // An exact header name wins; otherwise fall back to the looser headerKey match.
+  const findColumn = (names) => {
+    const exact = names.map((name) => headers.indexOf(normalize(name))).find((i) => i !== -1);
+    if (exact !== undefined) return exact;
+    const loose = names.map((name) => keys.indexOf(headerKey(name))).find((i) => i !== -1);
+    return loose ?? -1;
+  };
+  const positions = specs.map((spec) => findColumn([spec.name, ...(spec.aliases ?? [])]));
   const missing = specs.filter((spec, i) => spec.required && positions[i] === -1).map((spec) => spec.name);
   if (missing.length) return { records: [], missing };
 
