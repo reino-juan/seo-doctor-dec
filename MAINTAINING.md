@@ -1,4 +1,4 @@
-# Maintaining SEO Doctor | DEC
+# Maintaining SEO DECtor | DEC
 
 A handover guide for whoever looks after this app. It explains what the app does, how it is
 built, how to change the most common things, how to check that nothing broke, and how to
@@ -11,7 +11,7 @@ a text editor, a browser and Git are enough.
 
 ## 1. What the app does
 
-SEO Doctor checks the **GEO page type** that every page of a market's website declares in its
+SEO DECtor checks the **GEO page type** that every page of a market's website declares in its
 dataLayer (the value the 4CAST score relies on). It replaces two Google Sheets + Apps Script
 templates. The work happens in two steps, shown as two tabs in the **Page type** tool.
 

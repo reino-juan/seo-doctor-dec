@@ -1,4 +1,4 @@
-# SEO Doctor | DEC
+# SEO DECtor | DEC
 
 Browser-based tool that checks the GEO page type of every URL in a Screaming Frog crawl
 and produces an Excel report that markets can complete offline.

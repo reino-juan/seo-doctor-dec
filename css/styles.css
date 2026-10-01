@@ -1,4 +1,4 @@
-/* SEO Doctor | DEC
+/* SEO DECtor | DEC
    Palette from the DEC logo navy; carmine is reserved for counts that need fixing.
    Archivo for the interface, Bodoni Moda italic only for findings (echoes the logo's "the"). */
 
@@ -82,6 +82,17 @@ body {
   display: block;
   height: 56px;
   width: auto;
+}
+
+/* The E of DECtor borrows the logo's italic serif ("the"), so "DEC" reads inside the name. */
+.wordmark-e {
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 600;
+  font-stretch: normal;
+  font-size: 1.3em;
+  line-height: 0;
+  letter-spacing: 0.06em;
 }
 
 /* ---------- Layout: tool list on the canvas, work on a white sheet ---------- */
