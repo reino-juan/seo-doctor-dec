@@ -1,23 +1,153 @@
-// Shared UI helpers and the step tabs. Relies on Papa and ExcelJS, loaded before it in index.html.
+// Shared UI helpers and the step tabs. Relies on Papa, ExcelJS and pagetype.js, loaded before it in index.html.
 
-/** Reads a .csv or .xlsx (first sheet) file into an array of rows of strings. */
-async function readRows(file) {
+/**
+ * Reads a .csv or .xlsx file into its non-empty sheets: [{ name, hidden, rows }],
+ * where rows is an array of rows of strings. A CSV is a single sheet.
+ */
+async function readSheets(file) {
   if (/\.csv$/i.test(file.name)) {
-    const text = await file.text();
-    return Papa.parse(text, { skipEmptyLines: true }).data;
+    const rows = Papa.parse(await file.text(), { skipEmptyLines: true }).data;
+    return rows.length ? [{ name: file.name, hidden: false, rows }] : [];
   }
   if (/\.xlsx$/i.test(file.name)) {
     const workbook = new ExcelJS.Workbook();
     await workbook.xlsx.load(await file.arrayBuffer());
-    const rows = [];
-    workbook.worksheets[0].eachRow((row) => {
-      const cells = [];
-      for (let c = 1; c <= row.cellCount; c++) cells.push(row.getCell(c).text);
-      rows.push(cells);
-    });
-    return rows;
+    return workbook.worksheets
+      .map((sheet) => {
+        const rows = [];
+        sheet.eachRow((row) => {
+          const cells = [];
+          for (let c = 1; c <= row.cellCount; c++) cells.push(row.getCell(c).text);
+          rows.push(cells);
+        });
+        return { name: sheet.name, hidden: sheet.state !== 'visible', rows };
+      })
+      .filter((sheet) => sheet.rows.length > 0);
   }
   throw new Error('please upload a .csv or .xlsx file');
+}
+
+/**
+ * Wires one upload area: file picker + drop zone, spinner, "New …" button, errors, and a sheet
+ * chooser when a workbook has more than one sheet with data. `specs` (column specs) is used to
+ * tell the user which sheets have the columns the step needs.
+ * Calls onRows(rows) with the chosen sheet, and onReset() whenever the current result must go.
+ * Returns { showError }.
+ */
+function createIntake({ input, dropzone, fileName, loading, clearButton, errorBox, picker, sheetName, changeSheetButton, specs, onRows, onReset }) {
+  let sheets = [];
+  let loadId = 0; // ignores a slow file that finishes after a newer one was chosen
+
+  dropzone.addEventListener('click', () => input.click());
+  enableDrop(dropzone, load);
+  input.addEventListener('change', () => {
+    const file = input.files[0];
+    if (file) load(file);
+    input.value = ''; // allow re-uploading the same file
+  });
+  clearButton.addEventListener('click', reset);
+  changeSheetButton.addEventListener('click', choose);
+
+  function reset() {
+    loadId++;
+    sheets = [];
+    fileName.textContent = '';
+    loading.hidden = true;
+    dropzone.disabled = false;
+    clearButton.hidden = true;
+    clearSheetState();
+  }
+
+  function clearSheetState() {
+    picker.hidden = true;
+    sheetName.textContent = '';
+    changeSheetButton.hidden = true;
+    errorBox.hidden = true;
+    onReset();
+  }
+
+  async function load(file) {
+    reset();
+    const id = loadId;
+    fileName.textContent = file.name;
+    loading.hidden = false;
+    dropzone.disabled = true;
+
+    try {
+      const result = await readSheets(file);
+      if (id !== loadId) return;
+      sheets = result;
+    } catch (err) {
+      if (id === loadId) showError(`Could not read the file: ${err.message}`);
+      return;
+    } finally {
+      if (id === loadId) {
+        loading.hidden = true;
+        dropzone.disabled = false;
+        clearButton.hidden = false;
+      }
+    }
+
+    if (sheets.length === 0) showError('The file is empty.');
+    else if (sheets.length === 1) use(sheets[0]);
+    else choose();
+  }
+
+  function choose() {
+    clearSheetState();
+    const title = picker.querySelector('.sheet-picker-title');
+    const options = picker.querySelector('.sheet-options');
+    title.textContent = `This file has ${sheets.length} sheets with data. Choose the one to use.`;
+    options.replaceChildren(...sheets.map((sheet) => sheetOption(sheet)));
+    picker.hidden = false;
+    // Focus the likely choice: a visible sheet with the needed columns.
+    const likely = options.querySelector('.is-ready:not(.is-hidden)') ?? options.querySelector('.is-ready');
+    (likely ?? options.firstElementChild).focus();
+  }
+
+  function sheetOption(sheet) {
+    const { records, missing } = mapColumns(sheet.rows, specs);
+    const ready = missing.length === 0;
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'sheet-option';
+    button.classList.toggle('is-ready', ready);
+    button.classList.toggle('is-hidden', sheet.hidden);
+
+    const name = document.createElement('span');
+    name.className = 'sheet-option-name';
+    name.textContent = sheet.name;
+    const note = document.createElement('span');
+    note.className = 'sheet-option-note';
+    note.textContent =
+      (ready
+        ? `${records.length} ${plural(records.length, 'row', 'rows')} with the needed columns.`
+        : `Missing ${missing.join(', ')}.`) + (sheet.hidden ? ' Hidden in Excel.' : '');
+
+    button.append(name, note);
+    button.addEventListener('click', () => use(sheet));
+    return button;
+  }
+
+  function use(sheet) {
+    picker.hidden = true;
+    if (sheets.length > 1) {
+      sheetName.textContent = `Sheet: ${sheet.name}`;
+      changeSheetButton.hidden = false;
+    }
+    try {
+      onRows(sheet.rows);
+    } catch (err) {
+      showError(`Could not read the file: ${err.message}`);
+    }
+  }
+
+  function showError(message) {
+    errorBox.textContent = message;
+    errorBox.hidden = false;
+  }
+
+  return { showError };
 }
 
 /** plural(1, 'page', 'pages') -> 'page'; plural(2, ...) -> 'pages'. */

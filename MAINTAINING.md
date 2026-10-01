@@ -30,6 +30,9 @@ templates. The work happens in two steps, shown as two tabs in the **Page type**
    XML** (`PageType_Update_YYYYMMDD_HHMM.xml`). It sets the `pageCategory` of each Page
    Designer page.
 
+If an uploaded `.xlsx` has more than one sheet with data, the app asks which sheet to use.
+It shows each sheet's row count and whether it has the columns that step needs.
+
 Everything runs **in the browser**. Crawl data is never sent anywhere.
 
 ---
@@ -62,7 +65,8 @@ vendor/             PapaParse and ExcelJS
 js/pagetype.js      RULES: accepted page types, crawl columns, Step 1 checks, file names
 js/xml.js           RULES: Step 2 row selection, locale list, XML format
 js/report.js        Builds the Step 1 Excel report
-js/app.js           Shared helpers: read a file, download, drag and drop, step tabs, wording
+js/app.js           Shared upload flow (read file, drop zone, spinner, errors, sheet chooser),
+                    download, step tabs, wording helpers
 js/step-report.js   Step 1 screen (upload, result, download)
 js/step-xml.js      Step 2 screen (upload, locales, skipped rows, download)
 ```
@@ -171,6 +175,8 @@ original Google Sheet produced for that file. The Step 2 XML must contain exactl
 Also check quickly:
 - Download the Excel report and open it. The dropdown appears on the empty cells.
 - Tick a locale and download the XML. It opens in a browser without errors.
+- Upload a workbook with several sheets (e.g. one of the legacy templates in the handover zip).
+  The sheet chooser appears, and picking the right sheet gives a result.
 - Open `index.html` by **double-clicking** it (not through a web server). Fonts, logo and
   flags all show.
 

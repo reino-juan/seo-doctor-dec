@@ -275,6 +275,64 @@ body {
   color: var(--carmine);
 }
 
+/* ---------- Sheet chooser (workbooks with several sheets) ---------- */
+
+.sheet-name {
+  color: var(--slate);
+}
+
+.sheet-name:empty {
+  display: none;
+}
+
+.sheet-picker {
+  margin-top: 20px;
+}
+
+.sheet-picker-title {
+  margin: 0 0 12px;
+  font-weight: 600;
+}
+
+.sheet-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 10px;
+}
+
+.sheet-option {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px 14px;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.sheet-option:hover {
+  border-color: var(--ink);
+}
+
+/* Sheets that have the columns the step needs: the likely choice. */
+.sheet-option.is-ready {
+  border-left: 3px solid var(--ink);
+}
+
+.sheet-option-name {
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.sheet-option-note {
+  color: var(--slate);
+  font-size: var(--text-sm);
+}
+
 /* ---------- Buttons ---------- */
 
 .btn {

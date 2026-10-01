@@ -1,12 +1,6 @@
 // Step 2 UI: upload the report completed by the market, pick locales, download the XML.
 // Relies on pagetype.js, xml.js and app.js, loaded before it in index.html.
 (() => {
-  const fileInput = document.getElementById('xml-file');
-  const uploadButton = document.getElementById('xml-upload-button');
-  const fileName = document.getElementById('xml-file-name');
-  const loading = document.getElementById('xml-loading');
-  const clearButton = document.getElementById('xml-clear-button');
-  const errorBox = document.getElementById('xml-upload-error');
   const resultBox = document.getElementById('xml-result');
   const site = document.getElementById('xml-site');
   const finding = document.getElementById('xml-finding');
@@ -30,42 +24,29 @@
   const localeBoxes = [...localeList.querySelectorAll('input')];
   const selectedLocales = () => localeBoxes.filter((box) => box.checked).map((box) => box.value);
 
-  uploadButton.addEventListener('click', () => fileInput.click());
-  enableDrop(uploadButton, handleFile);
-  clearButton.addEventListener('click', reset);
   localeList.addEventListener('change', updateDownload);
-  fileInput.addEventListener('change', () => {
-    const file = fileInput.files[0];
-    if (file) handleFile(file);
-    fileInput.value = ''; // allow re-uploading the same file
-  });
 
-  downloadButton.addEventListener('click', () => {
-    const xml = buildXml(entries, selectedLocales());
-    downloadBlob(new Blob([xml], { type: 'application/xml' }), xmlFileName());
-  });
-
-  function reset() {
-    entries = [];
-    resultBox.hidden = true;
-    errorBox.hidden = true;
-    skippedBox.hidden = true;
-    fileName.textContent = '';
-    clearButton.hidden = true;
-    localeBoxes.forEach((box) => (box.checked = false));
-  }
-
-  async function handleFile(file) {
-    reset();
-    fileName.textContent = file.name;
-    loading.hidden = false;
-    uploadButton.disabled = true;
-
-    try {
-      const rows = await readRows(file);
+  const intake = createIntake({
+    input: document.getElementById('xml-file'),
+    dropzone: document.getElementById('xml-upload-button'),
+    fileName: document.getElementById('xml-file-name'),
+    loading: document.getElementById('xml-loading'),
+    clearButton: document.getElementById('xml-clear-button'),
+    errorBox: document.getElementById('xml-upload-error'),
+    picker: document.getElementById('xml-sheet-picker'),
+    sheetName: document.getElementById('xml-sheet-name'),
+    changeSheetButton: document.getElementById('xml-change-sheet'),
+    specs: XML_COLUMN_SPECS,
+    onReset: () => {
+      entries = [];
+      resultBox.hidden = true;
+      skippedBox.hidden = true;
+      localeBoxes.forEach((box) => (box.checked = false));
+    },
+    onRows: (rows) => {
       const { records, missing } = mapColumns(rows, XML_COLUMN_SPECS);
       if (missing.length) {
-        return showError(`This is not a completed report. Missing column(s): ${missing.join(', ')}.`);
+        return intake.showError(`This is not a completed report. Missing column(s): ${missing.join(', ')}.`);
       }
 
       const result = buildXmlEntries(records);
@@ -75,14 +56,13 @@
       showSkipped(result.skipped);
       resultBox.hidden = false;
       updateDownload();
-    } catch (err) {
-      showError(`Could not read the file: ${err.message}`);
-    } finally {
-      loading.hidden = true;
-      uploadButton.disabled = false;
-      clearButton.hidden = false;
-    }
-  }
+    },
+  });
+
+  downloadButton.addEventListener('click', () => {
+    const xml = buildXml(entries, selectedLocales());
+    downloadBlob(new Blob([xml], { type: 'application/xml' }), xmlFileName());
+  });
 
   function showFinding(skippedCount) {
     const count = entries.length;
@@ -123,10 +103,5 @@
     const noLocale = selectedLocales().length === 0;
     downloadButton.disabled = entries.length === 0 || noLocale;
     localeHint.hidden = !noLocale || entries.length === 0;
-  }
-
-  function showError(message) {
-    errorBox.textContent = message;
-    errorBox.hidden = false;
   }
 })();

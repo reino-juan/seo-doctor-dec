@@ -61,7 +61,13 @@
               <div class="file-row">
                 <span id="file-name" class="file-name"></span>
                 <span id="loading" class="loading" role="status" hidden>Reading file…</span>
+                <span id="sheet-name" class="sheet-name"></span>
+                <button id="change-sheet" class="btn btn-quiet" type="button" hidden>Change sheet</button>
                 <button id="clear-button" class="btn btn-quiet" type="button" hidden>New crawl</button>
+              </div>
+              <div id="sheet-picker" class="sheet-picker" role="group" aria-labelledby="sheet-picker-title" hidden>
+                <p id="sheet-picker-title" class="sheet-picker-title"></p>
+                <div class="sheet-options"></div>
               </div>
               <p id="upload-error" class="error" role="alert" hidden></p>
             </section>
@@ -88,7 +94,13 @@
               <div class="file-row">
                 <span id="xml-file-name" class="file-name"></span>
                 <span id="xml-loading" class="loading" role="status" hidden>Reading file…</span>
+                <span id="xml-sheet-name" class="sheet-name"></span>
+                <button id="xml-change-sheet" class="btn btn-quiet" type="button" hidden>Change sheet</button>
                 <button id="xml-clear-button" class="btn btn-quiet" type="button" hidden>New file</button>
+              </div>
+              <div id="xml-sheet-picker" class="sheet-picker" role="group" aria-labelledby="xml-sheet-picker-title" hidden>
+                <p id="xml-sheet-picker-title" class="sheet-picker-title"></p>
+                <div class="sheet-options"></div>
               </div>
               <p id="xml-upload-error" class="error" role="alert" hidden></p>
             </section>
@@ -128,7 +140,7 @@
     <footer class="footer">
       <p>Created by Juan Reino. <a href="mailto:juan.reino@loreal.com">juan.reino@loreal.com</a></p>
       <!-- Bump on each release; see "Versioning" in CLAUDE.md. -->
-      <p class="version">Version 1.2.0</p>
+      <p class="version">Version 1.3.0</p>
     </footer>
   </body>
 </html>
