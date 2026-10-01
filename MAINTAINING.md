@@ -184,7 +184,8 @@ Also check quickly:
    - **x.y+1.0** for new features (new locale, new tool)
    - **x+1.0.0** when the Excel report or XML format changes (people's files change)
 3. Commit and push to GitHub.
-4. Update the hosted copy: upload the new files (or redeploy) wherever the app is hosted.
+4. That's it: GitHub Pages republishes the site automatically 1–2 minutes after each push to
+   `main` (section 7). Reload the live URL and check the footer shows the new version.
 
 Version history: see `git log`.
 
@@ -202,5 +203,14 @@ Version history: see `git log`.
     If you use Claude Code, put it in the project folder and Claude will follow it
     automatically.
   - `code/`: a snapshot of the repository at handover time.
-- **Hosting:** fill in when decided (who hosts it, the URL, and how to update it).
+- **Hosting:** GitHub Pages, from the `main` branch, root folder (enabled 2026-10-01).
+  - Live URL: **https://reino-juan.github.io/seo-doctor-dec/**
+  - Every push to `main` republishes the site automatically. There's nothing else to do.
+  - Settings: repository **Settings → Pages** (Source: *Deploy from a branch*, `main`, `/ (root)`).
+  - Free because the repository is **public**. Making it private turns the site off unless the
+    owner has a paid GitHub plan.
+  - If the repository is transferred to an organization, the URL becomes
+    `https://<organization>.github.io/seo-doctor-dec/`. Tell users the new link.
+  - Everything in the repository is reachable on the site, including this file. Never commit
+    crawl data, templates or anything confidential.
 - **Contact / owner:** fill in after handover (and update the footer in `index.html`).
