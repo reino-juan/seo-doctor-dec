@@ -12,12 +12,13 @@ a text editor, a browser and Git are enough.
 ## 1. What the app does
 
 SEO DECtor replaces several Google Sheets + Apps Script templates used to audit a market's
-website. It has two tools in the sidebar, each with two steps (two tabs):
+website. It has three tools in the sidebar:
 
-- **Page type**: checks the **GEO page type** that every page declares in its dataLayer (the
-  value the 4CAST score relies on).
-- **Metadata**: checks titles, meta descriptions and H1s, and turns the market's new texts into
-  import files (section 1b).
+- **Page type** (two steps): checks the **GEO page type** that every page declares in its
+  dataLayer (the value the 4CAST score relies on).
+- **Metadata** (two steps): checks titles and meta descriptions, and turns the market's new
+  texts into import files (section 1b).
+- **H1** (one step): finds pages with no H1 or more than one (section 1c).
 
 ### 1a. Page type
 
@@ -41,14 +42,13 @@ website. It has two tools in the sidebar, each with two steps (two tabs):
 **Step 1 – Create report**
 
 1. Upload a **Screaming Frog crawl** with the columns Address, PLP ID 1, PDP ID 1, Title 1 and
-   Description 1 (Page Designer 1, Content Asset 1, H1 1, H1 2 and Status Code are used too).
+   Description 1 (Page Designer 1, Content Asset 1 and Status Code are used too).
 2. The app shows how many pages need a new title or description, e.g. "*233 of 301 pages need a
    new title or description.*" Titles should have **50–60** characters, descriptions **140–155**.
-3. Download the **Excel report** (`YSLBEAUTY_FR_Metadata.xlsx`) and send it to the market:
-   - `Title + Description`: only the pages to fix. The market writes the new texts in the
-     **DEC Title** and **DEC Description** columns; a live length counter turns green or red.
-     Grey cells are already fine.
-   - `H1`: pages with no H1 or with more than one.
+3. Download the **Excel report** (`YSLBEAUTY_FR_Metadata.xlsx`, sheet `Title + Description`) and
+   send it to the market. It lists only the pages to fix. The market writes the new texts in the
+   **DEC Title** and **DEC Description** columns; a live length counter turns green or red.
+   Grey cells are already fine.
 
 **Step 2 – Generate XML**
 
@@ -66,7 +66,14 @@ website. It has two tools in the sidebar, each with two steps (two tabs):
 The catalog list can be changed under **Manage catalogs** (bottom of Step 2). Changes are saved
 in that browser only; "Restore the default list" brings back the built-in list.
 
-### Both tools
+### 1c. H1
+
+Upload a crawl with Address and H1 1 (H1 2 finds pages with more than one H1). The app shows e.g.
+"*86 of 301 pages need an H1 fix.*" Download `YSLBEAUTY_FR_H1.xlsx` and send it to the market:
+they write the new H1 in "H1 to implement". There is no XML step: H1s are changed in the site
+itself.
+
+### All tools
 
 If an uploaded `.xlsx` has more than one sheet with data, the app asks which sheet to use.
 It shows each sheet's row count and whether it has the columns that step needs.
@@ -105,16 +112,19 @@ js/xml.js           RULES (Page type): Step 2 row selection, locale list, XML fo
 js/report.js        Builds the Page type Excel report
 js/metadata.js      RULES (Metadata): crawl columns, IDs, length ranges, Step 2 rows, text
                     encoding, XML format, locales, default catalog list
-js/metadata-report.js  Builds the Metadata Excel report
+js/metadata-report.js  Builds the Metadata Excel report (and shared sheet helpers)
+js/h1.js            RULES (H1): crawl columns, which pages have an H1 problem
+js/h1-report.js     Builds the H1 Excel report
 js/app.js           Shared upload flow (read file, drop zone, spinner, errors, sheet chooser),
                     download, step tabs, sidebar tool switching, wording helpers
 js/step-report.js   Page type Step 1 screen
 js/step-xml.js      Page type Step 2 screen
 js/step-meta-report.js  Metadata Step 1 screen
 js/step-meta-xml.js     Metadata Step 2 screen + "Manage catalogs"
+js/step-h1.js       H1 screen
 ```
 
-The **rules** files (`pagetype.js`, `xml.js`, `metadata.js`) never touch the page. They take data in and give
+The **rules** files (`pagetype.js`, `xml.js`, `metadata.js`, `h1.js`) never touch the page. They take data in and give
 data back, which keeps them easy to read and test. The **screen** files (`step-*.js`) only
 handle the page. They are each wrapped in `(() => { ... })();` so their variable names don't
 clash with each other.
@@ -245,6 +255,7 @@ the **handover zip** (`examples/` folder), not in GitHub, because they contain r
 | 1    | `lancome_es_custom_extraction_all.csv`  | "62 of 213 pages need a page type." (lancome.es)  |
 | 2    | `lancome_es_completed.csv`              | "196 pages will get their new page type."         |
 | Metadata 1 | `ysl_fr_metadata_crawl.csv`       | "233 of 301 pages need a new title or description." |
+| H1   | `ysl_fr_metadata_crawl.csv`             | "86 of 301 pages need an H1 fix." (59 without H1, 27 with several) |
 | Metadata 2 | `ysl_fr_country_doc_descriptions.csv` + the crawl above | "183 pages will get new metadata." (137 products, 3 categories, 43 content pages) |
 
 `lancome_es_expected_entries.json` lists the exact 196 `content-id → page type` pairs that the

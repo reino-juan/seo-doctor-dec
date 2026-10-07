@@ -1,4 +1,4 @@
-// Metadata rules: crawl columns, page IDs, title/description/H1 checks (Step 1) and the
+// Metadata rules: crawl columns, page IDs, title/description checks (Step 1) and the
 // SFCC catalog/library import XML (Step 2). Pure functions, no DOM. Relies on pagetype.js
 // (mapColumns, headerKey, siteName) and xml.js (escapeAttr; XML_LOCALES is the locale list).
 
@@ -13,8 +13,6 @@ const META_CRAWL_SPECS = [
   { name: 'Content Asset 1' },
   { name: 'Title 1', required: true },
   { name: 'Description 1', required: true, aliases: ['Meta Description 1'] },
-  { name: 'H1 1', aliases: ['H1-1'] }, // optional: without it the report has no H1 sheet
-  { name: 'H1 2', aliases: ['H1-2'] },
 ];
 
 // Lengths (characters) the team aims for; outside them, or empty, the page goes in the report.
@@ -31,9 +29,6 @@ const META_HEADERS = {
   decTitle: `DEC Title (${TITLE_RANGE.min}-${TITLE_RANGE.max} characters)`,
   decDescription: `DEC Description (${DESCRIPTION_RANGE.min}-${DESCRIPTION_RANGE.max} characters)`,
   length: 'L',
-  issue: 'Issue',
-  h1: 'H1 - current',
-  h1New: 'H1 to implement',
 };
 
 // Page types in the XML, in display order. `element` is the XML tag, `catalog` whether the file
@@ -74,34 +69,23 @@ const inRange = (text, { min, max }) => textLength(text) >= min && textLength(te
 
 /**
  * Step 1: checks every page of the crawl.
- * Returns { pages, hasH1 } where each page is
- * { type, id, url, title, description, h1, titleOk, descriptionOk, h1Issue }
- * (h1Issue: '' | 'Missing' | 'More than one H1'). Non-pages (images, redirects…) are dropped.
+ * Returns { pages, missing } where each page is
+ * { type, id, url, title, description, titleOk, descriptionOk }. Non-pages (images, redirects…)
+ * are dropped.
  */
 function checkMetadata(rows) {
   const { records, missing } = mapColumns(rows, META_CRAWL_SPECS);
   if (missing.length) return { missing };
 
-  const headerRow = rows.find((row) => row.some((cell) => headerKey(cell) === 'address')) ?? [];
-  const hasH1 = headerRow.some((cell) => ['h1', 'h1-1'].includes(headerKey(cell)));
-
-  const pages = records.filter(isPage).map((record) => {
-    const h1 = record['H1 1'];
-    let h1Issue = '';
-    if (hasH1 && !h1) h1Issue = 'Missing';
-    else if (record['H1 2']) h1Issue = 'More than one H1';
-    return {
-      ...pageId(record),
-      url: record.Address,
-      title: record['Title 1'],
-      description: record['Description 1'],
-      h1,
-      titleOk: inRange(record['Title 1'], TITLE_RANGE),
-      descriptionOk: inRange(record['Description 1'], DESCRIPTION_RANGE),
-      h1Issue,
-    };
-  });
-  return { pages, hasH1, missing: [] };
+  const pages = records.filter(isPage).map((record) => ({
+    ...pageId(record),
+    url: record.Address,
+    title: record['Title 1'],
+    description: record['Description 1'],
+    titleOk: inRange(record['Title 1'], TITLE_RANGE),
+    descriptionOk: inRange(record['Description 1'], DESCRIPTION_RANGE),
+  }));
+  return { pages, missing: [] };
 }
 
 // ---------- Step 2: completed report -> XML ----------

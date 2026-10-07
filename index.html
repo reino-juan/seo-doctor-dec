@@ -14,11 +14,14 @@
     <script defer src="js/xml.js"></script>
     <script defer src="js/metadata.js"></script>
     <script defer src="js/metadata-report.js"></script>
+    <script defer src="js/h1.js"></script>
+    <script defer src="js/h1-report.js"></script>
     <script defer src="js/app.js"></script>
     <script defer src="js/step-report.js"></script>
     <script defer src="js/step-xml.js"></script>
     <script defer src="js/step-meta-report.js"></script>
     <script defer src="js/step-meta-xml.js"></script>
+    <script defer src="js/step-h1.js"></script>
   </head>
   <body>
     <header class="masthead">
@@ -32,6 +35,7 @@
       <nav class="tools" aria-label="Tools">
         <a class="tool" href="#page-type" aria-current="page">Page type</a>
         <a class="tool" href="#metadata">Metadata</a>
+        <a class="tool" href="#h1">H1</a>
         <p class="tool-soon">More checks coming soon</p>
       </nav>
 
@@ -145,7 +149,7 @@
         <div class="sheet-inner">
           <h2 class="tool-title">Metadata</h2>
           <p class="tool-intro">
-            Find the pages whose title, meta description or H1 needs work, send them to the market,
+            Find the pages whose title or meta description needs work, send them to the market,
             then turn their new texts into import files.
           </p>
 
@@ -167,7 +171,7 @@
               </button>
               <p id="meta-help" class="hint">
                 Needs the columns Address, PLP ID 1, PDP ID 1, Title 1 and Description 1. Page Designer 1,
-                Content Asset 1, H1 1, H1 2 and Status Code are used when present.
+                Content Asset 1 and Status Code are used when present.
               </p>
               <div class="file-row">
                 <span id="meta-file-name" class="file-name"></span>
@@ -288,13 +292,54 @@
           </div>
         </div>
       </main>
+
+      <main class="sheet" id="h1" hidden>
+        <div class="sheet-inner">
+          <h2 class="tool-title">H1</h2>
+          <p class="tool-intro">
+            Find the pages with no H1 or with more than one, and send them to the market to write a
+            new one.
+          </p>
+
+          <section class="intake intake-first">
+            <input type="file" id="h1-file" accept=".csv,.xlsx" hidden />
+            <button id="h1-upload-button" class="dropzone" type="button" aria-describedby="h1-help">
+              <span class="dropzone-title">Drop the Screaming Frog crawl here</span>
+              <span class="dropzone-sub">or click to choose a .csv or .xlsx file</span>
+            </button>
+            <p id="h1-help" class="hint">
+              Needs the columns Address and H1 1. H1 2 (to find pages with more than one H1), the ID
+              columns and Status Code are used when present.
+            </p>
+            <div class="file-row">
+              <span id="h1-file-name" class="file-name"></span>
+              <span id="h1-loading" class="loading" role="status" hidden>Reading file…</span>
+              <span id="h1-sheet-name" class="sheet-name"></span>
+              <button id="h1-change-sheet" class="btn btn-quiet" type="button" hidden>Change sheet</button>
+              <button id="h1-clear-button" class="btn btn-quiet" type="button" hidden>New crawl</button>
+            </div>
+            <div id="h1-sheet-picker" class="sheet-picker" role="group" aria-labelledby="h1-sheet-picker-title" hidden>
+              <p id="h1-sheet-picker-title" class="sheet-picker-title"></p>
+              <div class="sheet-options"></div>
+            </div>
+            <p id="h1-upload-error" class="error" role="alert" hidden></p>
+          </section>
+
+          <section id="h1-result" class="diagnosis" aria-live="polite" hidden>
+            <p id="h1-site" class="patient"></p>
+            <p id="h1-finding" class="finding"></p>
+            <p id="h1-advice" class="advice"></p>
+            <button id="h1-download-button" class="btn btn-primary" type="button">Download report</button>
+          </section>
+        </div>
+      </main>
     </div>
 
     <footer class="footer">
       <p>Created by Juan Reino. <a href="mailto:juan.reino@loreal.com">juan.reino@loreal.com</a></p>
       <!-- Bump on each release; see "Versioning" in CLAUDE.md. -->
       <p class="version">
-        Version 1.5.0 ·
+        Version 1.6.0 ·
         <a href="https://github.com/reino-juan/seo-doctor-dec" target="_blank" rel="noopener">Source code on GitHub</a>
       </p>
     </footer>

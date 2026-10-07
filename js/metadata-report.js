@@ -1,5 +1,5 @@
-// Metadata Step 1 Excel report. Relies on ExcelJS, report.js (HEADER_FILL, STATUS_FILLS)
-// and metadata.js, loaded before it in index.html.
+// Metadata Step 1 Excel report, plus the sheet helpers the H1 report reuses. Relies on ExcelJS,
+// report.js (HEADER_FILL, STATUS_FILLS) and metadata.js, loaded before it in index.html.
 
 const KEEP_FILL = 'FFEFEFEF'; // DEC cell for a title/description that is already fine
 
@@ -29,12 +29,19 @@ function colourLengths(sheet, column, lastRow, { min, max }) {
   });
 }
 
+/** Workbook -> .xlsx Blob. */
+async function workbookBlob(workbook) {
+  const buffer = await workbook.xlsx.writeBuffer();
+  return new Blob([buffer], {
+    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  });
+}
+
 /**
  * Builds the workbook from checkMetadata's result: "Title + Description" with the pages to fix
- * (live length counters next to the DEC columns the market fills) and, if the crawl had H1s,
- * "H1" with pages missing one or having several. Returns a Blob.
+ * (live length counters next to the DEC columns the market fills). Returns a Blob.
  */
-async function buildMetaReport({ pages, hasH1 }) {
+async function buildMetaReport({ pages }) {
   const workbook = new ExcelJS.Workbook();
   workbook.calcProperties.fullCalcOnLoad = true; // the DEC length formulas
 
@@ -60,16 +67,5 @@ async function buildMetaReport({ pages, hasH1 }) {
   colourLengths(metas, 'I', last, TITLE_RANGE);
   colourLengths(metas, 'G', last, DESCRIPTION_RANGE);
   colourLengths(metas, 'K', last, DESCRIPTION_RANGE);
-
-  if (hasH1) {
-    const h1Sheet = addSheet(workbook, 'H1', [[h.type, 10], [h.id, 24], [h.url, 60], [h.issue, 18], [h.h1, 40], [h.h1New, 40]]);
-    pages
-      .filter((page) => page.h1Issue)
-      .forEach((page) => h1Sheet.addRow([page.type, page.id, page.url, page.h1Issue, page.h1, '']));
-  }
-
-  const buffer = await workbook.xlsx.writeBuffer();
-  return new Blob([buffer], {
-    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-  });
+  return workbookBlob(workbook);
 }

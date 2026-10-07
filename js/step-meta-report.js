@@ -1,4 +1,4 @@
-// Metadata Step 1 UI: upload a crawl, check titles, descriptions and H1s, download the report.
+// Metadata Step 1 UI: upload a crawl, check titles and descriptions, download the report.
 // Relies on metadata.js, metadata-report.js and app.js, loaded before it in index.html.
 (() => {
   const resultBox = document.getElementById('meta-result');
@@ -50,7 +50,7 @@
     }
   });
 
-  function showDiagnosis({ pages, hasH1 }) {
+  function showDiagnosis({ pages }) {
     const total = pages.length;
     const toFix = pages.filter((page) => !page.titleOk || !page.descriptionOk);
     const titles = pages.filter((page) => !page.titleOk).length;
@@ -73,16 +73,6 @@
       setFinding(finding, total, `${plural(total, 'page has', 'pages have')} a title and description of the right length.`);
     }
 
-    if (hasH1) {
-      const missing = pages.filter((page) => page.h1Issue === 'Missing').length;
-      const several = pages.filter((page) => page.h1Issue === 'More than one H1').length;
-      if (missing || several) {
-        sentences.push(`${missing} ${plural(missing, 'page has', 'pages have')} no H1 and ${several} more than one.`);
-      } else sentences.push('Every page has exactly one H1.');
-    } else {
-      sentences.push('The crawl has no H1 column, so H1s were not checked.');
-    }
-
     if (manual > 0) {
       sentences.push(
         `${manual} of the pages to fix ${plural(manual, 'has', 'have')} no ID in the crawl, so ${plural(manual, 'it', 'they')} can’t go in the XML and must be updated by hand.`
@@ -91,7 +81,7 @@
     sentences.push(
       toFix.length > 0
         ? 'Download the report and send it to the market. They write the new texts in the DEC columns; grey cells are already fine.'
-        : `You can still download the report${hasH1 ? ' for the H1 check' : ' for your records'}.`
+        : 'Nothing for the market to fix. You can still download the report for your records.'
     );
     advice.textContent = sentences.join(' ');
   }

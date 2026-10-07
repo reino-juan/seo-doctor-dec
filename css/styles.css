@@ -425,6 +425,15 @@ body {
   font-variant-numeric: lining-nums;
 }
 
+/* Codes like "H1" inside a finding: the serif italic makes them unreadable. */
+.finding-code {
+  font-family: var(--sans);
+  font-style: normal;
+  font-weight: 600;
+  font-size: 0.82em;
+  letter-spacing: 0;
+}
+
 .count-alert {
   color: var(--carmine);
 }
@@ -543,6 +552,11 @@ body {
 }
 
 /* ---------- Metadata: optional crawl, export rows, catalog settings ---------- */
+
+/* A tool without step tabs: same gap above the drop zone as below the tabs. */
+.intake-first {
+  margin-top: 32px;
+}
 
 .optional-crawl {
   margin-top: 24px;
