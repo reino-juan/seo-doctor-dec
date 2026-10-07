@@ -19,6 +19,9 @@ const META_CRAWL_SPECS = [
 const TITLE_RANGE = { min: 50, max: 60 };
 const DESCRIPTION_RANGE = { min: 140, max: 155 };
 
+// The report's sheet. Step 2 reads only this sheet when the workbook has it.
+const META_REPORT_SHEET = 'Title + Description';
+
 // Report headers. Step 2 reads the DEC columns back (the note in brackets is ignored).
 const META_HEADERS = {
   type: 'Type',

@@ -52,7 +52,8 @@ website. It has three tools in the sidebar:
 
 **Step 2 – Generate XML**
 
-4. Upload the completed report. Older country docs that only have URL + DEC Title / DEC
+4. Upload the completed report. Only its `Title + Description` sheet is read (other sheets the
+   market may have added are ignored). Older country docs that only have URL + DEC Title / DEC
    Description also work: open **Add the crawl of the site (optional)** and drop the crawl so the
    app finds the IDs. The section opens by itself when the file needs it.
 5. Tick the **locales** of the texts (same list as Page type; each text is written once per

@@ -30,11 +30,12 @@ async function readSheets(file) {
 /**
  * Wires one upload area: file picker + drop zone, spinner, "New …" button, errors, and a sheet
  * chooser when a workbook has more than one sheet with data. `specs` (column specs) is used to
- * tell the user which sheets have the columns the step needs.
+ * tell the user which sheets have the columns the step needs. `onlySheet` (optional) is a sheet
+ * name that, when the workbook has it, is read straight away (no chooser, no "Change sheet").
  * Calls onRows(rows) with the chosen sheet, and onReset() whenever the current result must go.
  * Returns { showError }.
  */
-function createIntake({ input, dropzone, fileName, loading, clearButton, errorBox, picker, sheetName, changeSheetButton, specs, onRows, onReset }) {
+function createIntake({ input, dropzone, fileName, loading, clearButton, errorBox, picker, sheetName, changeSheetButton, specs, onlySheet, onRows, onReset }) {
   let sheets = [];
   let loadId = 0; // ignores a slow file that finishes after a newer one was chosen
 
@@ -88,7 +89,9 @@ function createIntake({ input, dropzone, fileName, loading, clearButton, errorBo
       }
     }
 
-    if (sheets.length === 0) showError('The file is empty.');
+    const named = onlySheet && sheets.find((sheet) => normalize(sheet.name) === normalize(onlySheet));
+    if (named) use(named, { fixed: true });
+    else if (sheets.length === 0) showError('The file is empty.');
     else if (sheets.length === 1) use(sheets[0]);
     else choose();
   }
@@ -129,11 +132,11 @@ function createIntake({ input, dropzone, fileName, loading, clearButton, errorBo
     return button;
   }
 
-  function use(sheet) {
+  function use(sheet, { fixed = false } = {}) {
     picker.hidden = true;
     if (sheets.length > 1) {
       sheetName.textContent = `Sheet: ${sheet.name}`;
-      changeSheetButton.hidden = false;
+      changeSheetButton.hidden = fixed;
     }
     try {
       onRows(sheet.rows);

@@ -37,6 +37,7 @@
     sheetName: document.getElementById('metax-sheet-name'),
     changeSheetButton: document.getElementById('metax-change-sheet'),
     specs: META_XML_SPECS,
+    onlySheet: META_REPORT_SHEET,
     onReset: () => {
       records = null;
       update();

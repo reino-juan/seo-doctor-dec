@@ -46,7 +46,7 @@ async function buildMetaReport({ pages }) {
   workbook.calcProperties.fullCalcOnLoad = true; // the DEC length formulas
 
   const h = META_HEADERS;
-  const metas = addSheet(workbook, 'Title + Description', [
+  const metas = addSheet(workbook, META_REPORT_SHEET, [
     [h.type, 10], [h.id, 24], [h.url, 60],
     [h.title, 45], [h.length, 5], [h.description, 60], [h.length, 5],
     [h.decTitle, 45], [h.length, 5], [h.decDescription, 60], [h.length, 5],
