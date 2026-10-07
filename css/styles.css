@@ -570,21 +570,18 @@ body {
   padding: 14px 0 14px 22px;
 }
 
-/* Collapsible sections share one disclosure chevron: right when closed, down when open. */
-.optional-crawl summary,
-.catalog-settings summary {
+/* Disclosure chevron: right when closed, down when open. */
+.optional-crawl summary {
   position: relative;
   list-style: none;
   cursor: pointer;
 }
 
-.optional-crawl summary::-webkit-details-marker,
-.catalog-settings summary::-webkit-details-marker {
+.optional-crawl summary::-webkit-details-marker {
   display: none;
 }
 
-.optional-crawl summary::before,
-.catalog-settings summary::before {
+.optional-crawl summary::before {
   content: '';
   position: absolute;
   left: 4px;
@@ -597,8 +594,7 @@ body {
   transition: transform 120ms;
 }
 
-.optional-crawl[open] summary::before,
-.catalog-settings[open] summary::before {
+.optional-crawl[open] summary::before {
   transform: rotate(45deg);
 }
 
@@ -684,36 +680,61 @@ body {
   margin: 0;
 }
 
-.catalog-settings {
-  margin-top: 48px;
-  padding-top: 20px;
+.export-settings > .hint:last-child,
+.locales + .hint {
+  margin-top: 12px;
+}
+
+.hint a {
+  color: var(--ink);
+  text-underline-offset: 2px;
+}
+
+/* ---------- Settings ---------- */
+
+.tool-settings {
+  margin-top: 24px;
+  padding-top: 18px;
+  border-top: 1px solid var(--rule);
+  font-size: var(--text-base);
+}
+
+.settings-section {
+  margin-top: 40px;
+  padding-top: 28px;
   border-top: 1px solid var(--rule);
 }
 
-.catalog-settings summary {
-  padding-left: 22px;
+.section-title {
+  margin: 0;
+  font-size: var(--text-md);
   font-weight: 700;
 }
 
-.catalog-settings summary::before {
-  top: 7px;
+.section-title .hint {
+  margin-left: 8px;
+  font-weight: 400;
 }
 
-.catalog-add {
+.section-title + .hint {
+  margin-top: 4px;
+}
+
+.list-add {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
   margin-top: 16px;
 }
 
-.catalog-add .text-input {
+.list-add .text-input {
   flex: 1;
   min-width: 200px;
   max-width: 360px;
 }
 
-.catalog-list {
-  max-height: 280px;
+.settings-list {
+  max-height: 320px;
   margin: 16px 0;
   padding: 0;
   overflow: auto;
@@ -723,16 +744,33 @@ body {
   font-size: var(--text-sm);
 }
 
-.catalog-list li {
+.settings-list li {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   gap: 12px;
   padding: 6px 12px;
   border-bottom: 1px solid var(--rule);
 }
 
-.catalog-list li:last-child {
-  border-bottom: none;
+/* Short items (locales) in columns. */
+.settings-list-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+}
+
+.settings-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow-wrap: anywhere;
+}
+
+.flag-blank {
+  display: inline-block;
+  width: 20px;
+  height: 15px;
+  background: var(--canvas);
 }
 
 .link-button {
@@ -824,6 +862,12 @@ body {
     padding: 0;
   }
 
+  .tool-settings {
+    margin: 0 0 0 auto;
+    padding: 6px 0 6px 14px;
+    border-top: none;
+  }
+
   .sheet {
     border-left: none;
     border-top: 1px solid var(--rule);
@@ -853,8 +897,7 @@ body {
   }
 
   .dropzone,
-  .optional-crawl summary::before,
-  .catalog-settings summary::before {
+  .optional-crawl summary::before {
     transition: none;
   }
 }

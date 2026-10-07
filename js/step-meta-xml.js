@@ -1,8 +1,7 @@
 // Metadata Step 2 UI: upload the completed report (plus the crawl when it has no IDs), tick the
-// locales and type the catalogs, download one XML per type. Also the "Manage catalogs" settings.
-// Relies on metadata.js and app.js, loaded before it in index.html.
+// locales and type the catalogs, download one XML per type. Locales and catalog suggestions come
+// from the Settings lists. Relies on metadata.js, settings.js and app.js, loaded before it.
 (() => {
-  const CATALOGS_KEY = 'seo-dector.catalogs'; // localStorage: the user's catalog list
 
   const resultBox = document.getElementById('metax-result');
   const site = document.getElementById('metax-site');
@@ -11,7 +10,7 @@
   const skippedBox = document.getElementById('metax-skipped');
   const skippedTitle = document.getElementById('metax-skipped-title');
   const skippedRows = document.getElementById('metax-skipped-rows');
-  const settings = document.getElementById('metax-settings');
+  const exportSettings = document.getElementById('metax-settings');
   const localeList = document.getElementById('metax-locales');
   const exportList = document.getElementById('metax-exports');
   const hint = document.getElementById('metax-hint');
@@ -104,7 +103,7 @@
           : 'No row has a DEC Title or DEC Description filled in.';
     }
     if (result.needCrawl > 0) crawlDetails.open = true;
-    settings.hidden = total === 0;
+    exportSettings.hidden = total === 0;
     showSkipped(result.skipped);
     renderExports(counts);
   }
@@ -151,7 +150,7 @@
           input.value = chosenCatalog[t.type] ?? '';
           const options = document.createElement('datalist');
           options.id = `metax-catalogs-${t.type}`;
-          options.append(...catalogsFor(t.type, catalogs).map((name) => new Option(name)));
+          options.append(...catalogsFor(t.type, settings.get('catalogs')).map((name) => new Option(name)));
           input.setAttribute('list', options.id);
           input.addEventListener('input', () => {
             chosenCatalog[t.type] = input.value.trim();
@@ -195,75 +194,13 @@
     const locales = localeChoice.selected();
     const xml = buildMetaXml(type, result.byType[type], { locales, catalog });
     downloadBlob(new Blob([xml], { type: 'application/xml' }), metaXmlFileName(records[0]?.URL, type, locales));
-    // A catalog typed by hand joins the user's list, so it's suggested next time.
-    if (catalog && !catalogs.includes(catalog)) setCatalogs([...catalogs, catalog]);
+    // A catalog typed by hand joins the Settings list, so it's suggested next time.
+    const catalogs = settings.get('catalogs');
+    if (catalog && !catalogs.includes(catalog)) settings.set('catalogs', [...catalogs, catalog]);
   }
 
-  // ---------- Manage catalogs (kept in this browser) ----------
-
-  const catalogList = document.getElementById('catalog-list');
-  const addForm = document.getElementById('catalog-add');
-  const newCatalog = document.getElementById('catalog-new');
-  let catalogs = loadCatalogs();
-
-  function loadCatalogs() {
-    try {
-      const saved = JSON.parse(localStorage.getItem(CATALOGS_KEY));
-      if (Array.isArray(saved)) return saved;
-    } catch {
-      // No storage (private window, blocked site data): use the defaults.
-    }
-    return [...DEFAULT_CATALOGS];
-  }
-
-  function setCatalogs(list, { save = true } = {}) {
-    catalogs = [...new Set(list)].sort((a, b) => a.localeCompare(b));
-    if (save) {
-      try {
-        localStorage.setItem(CATALOGS_KEY, JSON.stringify(catalogs));
-      } catch {
-        // Not saved; the change still applies until the page is closed.
-      }
-    }
-    renderCatalogs();
+  // Settings changed the catalog list: refresh the suggestions (typed values are kept).
+  settings.onChange('catalogs', () => {
     if (result) update();
-  }
-
-  function renderCatalogs() {
-    catalogList.replaceChildren(
-      ...catalogs.map((name) => {
-        const item = document.createElement('li');
-        const text = document.createElement('span');
-        text.textContent = name;
-        const remove = document.createElement('button');
-        remove.type = 'button';
-        remove.className = 'link-button';
-        remove.textContent = 'Remove';
-        remove.setAttribute('aria-label', `Remove ${name}`);
-        remove.addEventListener('click', () => setCatalogs(catalogs.filter((other) => other !== name)));
-        item.append(text, remove);
-        return item;
-      })
-    );
-  }
-
-  addForm.addEventListener('submit', (event) => {
-    event.preventDefault();
-    const name = newCatalog.value.trim();
-    if (!name) return;
-    setCatalogs([...catalogs, name]);
-    newCatalog.value = '';
-    newCatalog.focus();
   });
-
-  document.getElementById('catalog-reset').addEventListener('click', () => {
-    try {
-      localStorage.removeItem(CATALOGS_KEY);
-    } catch {
-      // Nothing saved to remove.
-    }
-    setCatalogs(DEFAULT_CATALOGS, { save: false });
-  });
-
-  setCatalogs(catalogs, { save: false });
 })();

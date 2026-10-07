@@ -16,12 +16,14 @@
     <script defer src="js/metadata-report.js"></script>
     <script defer src="js/h1.js"></script>
     <script defer src="js/h1-report.js"></script>
+    <script defer src="js/settings.js"></script>
     <script defer src="js/app.js"></script>
     <script defer src="js/step-report.js"></script>
     <script defer src="js/step-xml.js"></script>
     <script defer src="js/step-meta-report.js"></script>
     <script defer src="js/step-meta-xml.js"></script>
     <script defer src="js/step-h1.js"></script>
+    <script defer src="js/step-settings.js"></script>
   </head>
   <body>
     <header class="masthead">
@@ -37,6 +39,7 @@
         <a class="tool" href="#metadata">Metadata</a>
         <a class="tool" href="#h1">H1</a>
         <p class="tool-soon">More checks coming soon</p>
+        <a class="tool tool-settings" href="#settings">Settings</a>
       </nav>
 
       <main class="sheet" id="page-type">
@@ -135,6 +138,7 @@
                 <legend>Locales <span class="hint">x-default is always included</span></legend>
                 <div id="xml-locales" class="locale-grid"></div>
               </fieldset>
+              <p class="hint">Missing a locale? <a href="#settings">Add it in Settings</a>.</p>
 
               <div class="action-row">
                 <button id="xml-download-button" class="btn btn-primary" type="button" disabled>Download XML</button>
@@ -272,23 +276,9 @@
                 </fieldset>
                 <div id="metax-exports" class="exports"></div>
                 <p id="metax-hint" class="hint"></p>
+                <p class="hint">Missing a locale or a catalog? <a href="#settings">Add it in Settings</a>.</p>
               </div>
             </section>
-
-            <details class="catalog-settings">
-              <summary>Manage catalogs</summary>
-              <p class="hint">
-                Product XMLs go to a master catalog and category XMLs to a navigation catalog. Changes
-                to this list are saved in this browser only.
-              </p>
-              <form id="catalog-add" class="catalog-add">
-                <label class="visually-hidden" for="catalog-new">New catalog ID</label>
-                <input id="catalog-new" class="text-input" type="text" placeholder="e.g. ysl-master-catalog" autocomplete="off" />
-                <button class="btn btn-quiet" type="submit">Add catalog</button>
-              </form>
-              <ul id="catalog-list" class="catalog-list"></ul>
-              <button id="catalog-reset" class="btn btn-quiet" type="button">Restore the default list</button>
-            </details>
           </div>
         </div>
       </main>
@@ -333,13 +323,54 @@
           </section>
         </div>
       </main>
+
+      <main class="sheet" id="settings" hidden>
+        <div class="sheet-inner">
+          <h2 class="tool-title">Settings</h2>
+          <p class="tool-intro">
+            Lists that every tool uses. Changes are saved in this browser only: other people, other
+            browsers and this one after clearing its data get the default lists.
+          </p>
+
+          <section class="settings-section" aria-labelledby="locale-title">
+            <h3 id="locale-title" class="section-title">Locales <span id="locale-count" class="hint"></span></h3>
+            <p class="hint">
+              The locale checkboxes of Page type and Metadata, in this order. New locales go at the end.
+            </p>
+            <form id="locale-add" class="list-add">
+              <label class="visually-hidden" for="locale-new">New locale</label>
+              <input id="locale-new" class="text-input" type="text" placeholder="e.g. pt-PT" autocomplete="off" spellcheck="false" />
+              <button class="btn btn-quiet" type="submit">Add locale</button>
+            </form>
+            <p id="locale-error" class="error" role="alert" hidden></p>
+            <ul id="locale-list" class="settings-list settings-list-grid"></ul>
+            <button id="locale-reset" class="btn btn-quiet" type="button">Restore the default list</button>
+          </section>
+
+          <section class="settings-section" aria-labelledby="catalog-title">
+            <h3 id="catalog-title" class="section-title">Catalogs <span id="catalog-count" class="hint"></span></h3>
+            <p class="hint">
+              Suggested in Metadata › Generate XML: products go to a master catalog, categories to a
+              navigation catalog. A catalog typed there is added here when you download.
+            </p>
+            <form id="catalog-add" class="list-add">
+              <label class="visually-hidden" for="catalog-new">New catalog ID</label>
+              <input id="catalog-new" class="text-input" type="text" placeholder="e.g. ysl-master-catalog" autocomplete="off" spellcheck="false" />
+              <button class="btn btn-quiet" type="submit">Add catalog</button>
+            </form>
+            <p id="catalog-error" class="error" role="alert" hidden></p>
+            <ul id="catalog-list" class="settings-list"></ul>
+            <button id="catalog-reset" class="btn btn-quiet" type="button">Restore the default list</button>
+          </section>
+        </div>
+      </main>
     </div>
 
     <footer class="footer">
       <p>Created by Juan Reino. <a href="mailto:juan.reino@loreal.com">juan.reino@loreal.com</a></p>
       <!-- Bump on each release; see "Versioning" in CLAUDE.md. -->
       <p class="version">
-        Version 1.6.1 ·
+        Version 1.7.0 ·
         <a href="https://github.com/reino-juan/seo-doctor-dec" target="_blank" rel="noopener">Source code on GitHub</a>
       </p>
     </footer>

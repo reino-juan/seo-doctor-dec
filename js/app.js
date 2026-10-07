@@ -1,4 +1,5 @@
-// Shared UI helpers and the step tabs. Relies on Papa, ExcelJS and pagetype.js, loaded before it in index.html.
+// Shared UI helpers and the step tabs. Relies on Papa, ExcelJS, pagetype.js and settings.js,
+// loaded before it in index.html.
 
 /**
  * Reads a .csv or .xlsx file into its non-empty sheets: [{ name, hidden, rows }],
@@ -154,21 +155,40 @@ function createIntake({ input, dropzone, fileName, loading, clearButton, errorBo
 }
 
 /**
- * Fills `container` with one checkbox per locale of XML_LOCALES (xml.js), each with its country
- * flag (es-ES -> assets/flags/es.svg). Calls onChange when a box changes.
+ * Fills `container` with one checkbox per locale of the Settings list (settings.js), each with
+ * its country flag. Re-renders when the list changes, keeping what was ticked.
+ * Calls onChange when the selection may have changed.
  * Returns { selected: () => ['es-ES', …], clear: () => void }.
  */
 function localeCheckboxes(container, onChange) {
-  container.innerHTML = XML_LOCALES.map((locale) => {
-    const country = locale.split('-')[1].toLowerCase();
-    return `<label class="locale"><input type="checkbox" value="${locale}" />
-      <img class="flag" src="assets/flags/${country}.svg" alt="" width="20" height="15" /> ${locale}</label>`;
-  }).join('');
-  const boxes = [...container.querySelectorAll('input')];
+  const boxes = () => [...container.querySelectorAll('input')];
+  const selected = () => boxes().filter((box) => box.checked).map((box) => box.value);
+
+  function render() {
+    const ticked = selected();
+    container.replaceChildren(
+      ...settings.get('locales').map((locale) => {
+        const label = document.createElement('label');
+        label.className = 'locale';
+        const box = document.createElement('input');
+        box.type = 'checkbox';
+        box.value = locale;
+        box.checked = ticked.includes(locale);
+        label.append(box, flagFor(locale), ` ${locale}`);
+        return label;
+      })
+    );
+  }
+
+  render();
   container.addEventListener('change', onChange);
+  settings.onChange('locales', () => {
+    render();
+    onChange();
+  });
   return {
-    selected: () => boxes.filter((box) => box.checked).map((box) => box.value),
-    clear: () => boxes.forEach((box) => (box.checked = false)),
+    selected,
+    clear: () => boxes().forEach((box) => (box.checked = false)),
   };
 }
 

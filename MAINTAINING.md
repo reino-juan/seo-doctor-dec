@@ -20,6 +20,10 @@ website. It has three tools in the sidebar:
   texts into import files (section 1b).
 - **H1** (one step): finds pages with no H1 or more than one (section 1c).
 
+**Settings** (bottom of the sidebar) holds the lists the tools share: the **locales** offered as
+checkboxes in Page type and Metadata, and the **catalogs** suggested in Metadata. Add, remove or
+"Restore the default list". Changes are saved in that browser only.
+
 ### 1a. Page type
 
 **Step 1 – Create report**
@@ -60,12 +64,11 @@ website. It has three tools in the sidebar:
    locale) and type or pick a **catalog** for products (master catalog) and categories
    (navigation catalog), then download one **XML per type**
    (`DEC_20261007_YSLBEAUTY_FR_SEO_product_fr-FR.xml`). Content pages go to the site library.
-   Any catalog ID can be typed; a new one is added to the list when you download.
+   Any catalog ID can be typed; a new one is added to the Settings list when you download.
 6. Rows that can't go in the XML are listed on screen with the reason (no ID, not in the crawl,
    same ID with different texts…).
 
-The catalog list can be changed under **Manage catalogs** (bottom of Step 2). Changes are saved
-in that browser only; "Restore the default list" brings back the built-in list.
+Locales and catalogs can be added or removed in **Settings**.
 
 ### 1c. H1
 
@@ -123,6 +126,8 @@ js/step-xml.js      Page type Step 2 screen
 js/step-meta-report.js  Metadata Step 1 screen
 js/step-meta-xml.js     Metadata Step 2 screen + "Manage catalogs"
 js/step-h1.js       H1 screen
+js/settings.js      Shared locale + catalog lists (saved in the browser), flags
+js/step-settings.js Settings screen
 ```
 
 The **rules** files (`pagetype.js`, `xml.js`, `metadata.js`, `h1.js`) never touch the page. They take data in and give
@@ -230,10 +235,11 @@ XML format (products and categories use `<catalog … catalog-id="…">`, conten
 | Accept a new page type value            | `ACCEPTED_PAGE_TYPES` in `js/pagetype.js`. It updates the Excel dropdown and the XML check. |
 | Accept a new crawl column name          | Usually nothing to do (see the matching rule in section 3). For a name that differs in other ways, add it to `aliases` in `COLUMN_SPECS` (`js/pagetype.js`) |
 | Accept a new column name in Step 2      | Add it to `aliases` in `XML_COLUMN_SPECS` (`js/xml.js`)                     |
-| Add a locale (both tools)               | Add it to `XML_LOCALES` in `js/xml.js`. If the country is new, add its flag as `assets/flags/<country>.svg` (4x3 SVG from the flag-icons package, lowercase code, e.g. `pt.svg`). |
+| Add a locale for yourself only          | Settings → Locales → Add locale (saved in your browser) |
+| Add a locale for everyone (both tools)  | Add it to `XML_LOCALES` in `js/xml.js`. If the country has no flag yet, add it as `assets/flags/<country>.svg` (4x3 SVG from the flag-icons package, lowercase code, e.g. `fi.svg`) and to `FLAG_COUNTRIES` in `js/settings.js`. |
 | Change a text on screen                 | `index.html` (fixed text) or the `js/step-*.js` file of that screen (results) |
 | Change the title/description lengths    | `TITLE_RANGE` / `DESCRIPTION_RANGE` in `js/metadata.js`                     |
-| Change the built-in catalog list        | `DEFAULT_CATALOGS` in `js/metadata.js` (users' own changes in "Manage catalogs" stay in their browser) |
+| Change the built-in catalog list        | `DEFAULT_CATALOGS` in `js/metadata.js` (users' own changes in Settings stay in their browser) |
 | Change colours or fonts sizes           | Variables at the top of `css/styles.css`                                    |
 | Add a new tool to the sidebar           | New rules file + screen file in `js/`, a section in `index.html`, a link in the sidebar, and the `<script>` tags in the right order |
 
