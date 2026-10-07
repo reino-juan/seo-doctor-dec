@@ -32,10 +32,13 @@ const ACCEPTED_PAGE_TYPES = [
 // Also strips a UTF-8 BOM, which Screaming Frog CSV exports start with.
 const normalize = (value) => String(value ?? '').replace(/^﻿/, '').trim().toLowerCase();
 
-// Loose header form: drops a trailing "1" and the word "ID", so markets' own naming still matches.
-// "PLP ID 1" / "PLP ID" / "PLP 1" / "PLP" -> "plp"; "PLP ID 2" stays "plp 2" (a different column).
+// Loose header form: drops a note in brackets, a trailing "1" and the word "ID", so markets' own
+// naming still matches. "PLP ID 1" / "PLP ID" / "PLP 1" / "PLP" -> "plp"; "PLP ID 2" stays "plp 2"
+// (a different column); "DEC Title (50-60 characters)" -> "dec title".
 const headerKey = (value) =>
   normalize(value)
+    .replace(/\(.*?\)/g, ' ')
+    .trim()
     .replace(/\s+1$/, '')
     .replace(/\bid\b/g, ' ')
     .replace(/\s+/g, ' ')
@@ -43,13 +46,18 @@ const headerKey = (value) =>
 
 /**
  * Maps raw rows (array of arrays) to records keyed by the spec names.
- * Screaming Frog sometimes prepends a title line, so the header row is the first
- * one containing "Address"; rows without an Address are dropped.
- * Returns { records, missing } where `missing` lists required headers not found.
+ * The header row is the first one containing the first spec's column (Screaming Frog sometimes
+ * prepends a title line); rows where that first column is empty are dropped.
+ * A spec with `oneOf: 'label'` is optional on its own, but at least one spec sharing that label
+ * must be present.
+ * Returns { records, missing } where `missing` lists required headers (or oneOf labels) not found.
  */
 function mapColumns(rows, specs) {
-  const required = specs.filter((spec) => spec.required).map((spec) => spec.name);
-  const headerIndex = rows.findIndex((row) => row.some((cell) => normalize(cell) === 'address'));
+  const key = specs[0].name;
+  const required = [...new Set(specs.filter((spec) => spec.required || spec.oneOf).map((spec) => spec.oneOf ?? spec.name))];
+  const keyNames = [key, ...(specs[0].aliases ?? [])];
+  const isKeyHeader = (cell) => keyNames.some((name) => normalize(cell) === normalize(name) || headerKey(cell) === headerKey(name));
+  const headerIndex = rows.findIndex((row) => row.some(isKeyHeader));
   if (headerIndex === -1) return { records: [], missing: required };
 
   const headers = rows[headerIndex].map(normalize);
@@ -58,11 +66,18 @@ function mapColumns(rows, specs) {
   const findColumn = (names) => {
     const exact = names.map((name) => headers.indexOf(normalize(name))).find((i) => i !== -1);
     if (exact !== undefined) return exact;
-    const loose = names.map((name) => keys.indexOf(headerKey(name))).find((i) => i !== -1);
+    // ("ID" has an empty loose form, which would match any blank header.)
+    const loose = names.map((name) => (headerKey(name) ? keys.indexOf(headerKey(name)) : -1)).find((i) => i !== -1);
     return loose ?? -1;
   };
   const positions = specs.map((spec) => findColumn([spec.name, ...(spec.aliases ?? [])]));
-  const missing = specs.filter((spec, i) => spec.required && positions[i] === -1).map((spec) => spec.name);
+  const found = (spec, i) => positions[i] !== -1;
+  const missing = [
+    ...specs.filter((spec, i) => spec.required && !found(spec, i)).map((spec) => spec.name),
+    ...[...new Set(specs.filter((spec) => spec.oneOf).map((spec) => spec.oneOf))].filter(
+      (label) => !specs.some((spec, i) => spec.oneOf === label && found(spec, i))
+    ),
+  ];
   if (missing.length) return { records: [], missing };
 
   const records = rows
@@ -70,7 +85,7 @@ function mapColumns(rows, specs) {
     .map((row) =>
       Object.fromEntries(specs.map((spec, i) => [spec.name, positions[i] === -1 ? '' : String(row[positions[i]] ?? '').trim()]))
     )
-    .filter((record) => record.Address !== '');
+    .filter((record) => record[key] !== '');
 
   return { records, missing: [] };
 }

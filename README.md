@@ -1,7 +1,11 @@
 # SEO DECtor | DEC
 
-Browser-based tool that checks the GEO page type of every URL in a Screaming Frog crawl
-and produces an Excel report that markets can complete offline.
+Browser-based SEO audit tools for a Screaming Frog crawl:
+
+- **Page type**: checks the GEO page type of every URL, produces an Excel report that markets
+  complete offline, then the SFCC library import XML.
+- **Metadata**: finds titles, meta descriptions and H1s to fix, produces an Excel report for the
+  market, then SFCC catalog/library import XMLs with their new texts.
 
 ## Run
 

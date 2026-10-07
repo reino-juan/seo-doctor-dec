@@ -111,11 +111,21 @@ body {
 .tool {
   display: block;
   padding: 6px 0 6px 14px;
-  border-left: 3px solid var(--ink);
-  color: var(--ink);
-  font-weight: 700;
+  border-left: 3px solid transparent;
+  color: var(--slate);
+  font-weight: 600;
   font-size: var(--text-md);
   text-decoration: none;
+}
+
+.tool:hover {
+  color: var(--ink);
+}
+
+.tool[aria-current='page'] {
+  border-left-color: var(--ink);
+  color: var(--ink);
+  font-weight: 700;
 }
 
 .tool-soon {
@@ -532,6 +542,144 @@ body {
   box-shadow: 0 0 0 1px var(--rule);
 }
 
+/* ---------- Metadata: optional crawl, export rows, catalog settings ---------- */
+
+.intake-extra {
+  margin-top: 24px;
+}
+
+.dropzone-small {
+  padding: 16px 20px;
+}
+
+.dropzone-small .dropzone-title {
+  font-size: var(--text-base);
+}
+
+.export-settings {
+  display: grid;
+  gap: 20px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-width: 240px;
+}
+
+.field-label {
+  font-weight: 700;
+}
+
+.select,
+.text-input {
+  min-height: 40px;
+  padding: 6px 10px;
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+}
+
+.exports {
+  border-top: 1px solid var(--rule);
+}
+
+.export-row {
+  display: grid;
+  grid-template-columns: minmax(160px, 1fr) minmax(200px, 1.4fr) auto;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+.export-name {
+  font-weight: 600;
+}
+
+.export-note {
+  color: var(--slate);
+  font-size: var(--text-sm);
+}
+
+.export-settings .hint {
+  margin: 0;
+}
+
+.catalog-settings {
+  margin-top: 48px;
+  padding-top: 20px;
+  border-top: 1px solid var(--rule);
+}
+
+.catalog-settings summary {
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.catalog-add {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.catalog-add .text-input {
+  flex: 1;
+  min-width: 200px;
+  max-width: 360px;
+}
+
+.catalog-list {
+  max-height: 280px;
+  margin: 16px 0;
+  padding: 0;
+  overflow: auto;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  list-style: none;
+  font-size: var(--text-sm);
+}
+
+.catalog-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 6px 12px;
+  border-bottom: 1px solid var(--rule);
+}
+
+.catalog-list li:last-child {
+  border-bottom: none;
+}
+
+.link-button {
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--slate);
+  font: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+
+.link-button:hover {
+  color: var(--ink);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
 /* ---------- Footer ---------- */
 
 .footer {
@@ -612,6 +760,11 @@ body {
 
   .finding {
     font-size: 2rem;
+  }
+
+  .export-row {
+    grid-template-columns: 1fr;
+    gap: 8px;
   }
 }
 

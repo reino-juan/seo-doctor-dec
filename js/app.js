@@ -190,13 +190,32 @@ function enableDrop(zone, onFile) {
 // A file dropped outside a drop zone would make the browser open it and leave the app.
 ['dragover', 'drop'].forEach((type) => window.addEventListener(type, (event) => event.preventDefault()));
 
-// Step tabs: each [data-step] tab shows the panel with id "step-<name>".
+// Step tabs: each [data-step] tab shows the panel with id "step-<name>"; tabs only affect
+// the other tabs of their own tool.
 document.querySelectorAll('.step-tab').forEach((tab) => {
   tab.addEventListener('click', () => {
-    document.querySelectorAll('.step-tab').forEach((other) => {
-      const selected = other === tab;
-      other.setAttribute('aria-selected', String(selected));
-      document.getElementById(`step-${other.dataset.step}`).hidden = !selected;
-    });
+    tab
+      .closest('.step-tabs')
+      .querySelectorAll('.step-tab')
+      .forEach((other) => {
+        const selected = other === tab;
+        other.setAttribute('aria-selected', String(selected));
+        document.getElementById(`step-${other.dataset.step}`).hidden = !selected;
+      });
   });
 });
+
+// Sidebar tools: each link's hash (#page-type, #metadata) names the <main> section it shows.
+// Unknown or empty hash -> the first tool.
+function showTool() {
+  const links = [...document.querySelectorAll('.tool')];
+  const current = links.find((link) => link.hash === location.hash) ?? links[0];
+  links.forEach((link) => {
+    const selected = link === current;
+    if (selected) link.setAttribute('aria-current', 'page');
+    else link.removeAttribute('aria-current');
+    document.querySelector(link.hash).hidden = !selected;
+  });
+}
+window.addEventListener('hashchange', showTool);
+showTool();

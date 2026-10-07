@@ -11,9 +11,15 @@ a text editor, a browser and Git are enough.
 
 ## 1. What the app does
 
-SEO DECtor checks the **GEO page type** that every page of a market's website declares in its
-dataLayer (the value the 4CAST score relies on). It replaces two Google Sheets + Apps Script
-templates. The work happens in two steps, shown as two tabs in the **Page type** tool.
+SEO DECtor replaces several Google Sheets + Apps Script templates used to audit a market's
+website. It has two tools in the sidebar, each with two steps (two tabs):
+
+- **Page type**: checks the **GEO page type** that every page declares in its dataLayer (the
+  value the 4CAST score relies on).
+- **Metadata**: checks titles, meta descriptions and H1s, and turns the market's new texts into
+  import files (section 1b).
+
+### 1a. Page type
 
 **Step 1 – Create report**
 
@@ -29,6 +35,35 @@ templates. The work happens in two steps, shown as two tabs in the **Page type**
 5. Tick the locales of the site and download the **Salesforce Commerce Cloud library import
    XML** (`PageType_Update_YYYYMMDD_HHMM.xml`). It sets the `pageCategory` of each Page
    Designer page.
+
+### 1b. Metadata
+
+**Step 1 – Create report**
+
+1. Upload a **Screaming Frog crawl** with the columns Address, PLP ID 1, PDP ID 1, Title 1 and
+   Description 1 (Page Designer 1, Content Asset 1, H1 1, H1 2 and Status Code are used too).
+2. The app shows how many pages need a new title or description, e.g. "*233 of 301 pages need a
+   new title or description.*" Titles should have **50–60** characters, descriptions **140–155**.
+3. Download the **Excel report** (`YSLBEAUTY_FR_Metadata.xlsx`) and send it to the market:
+   - `Title + Description`: only the pages to fix. The market writes the new texts in the
+     **DEC Title** and **DEC Description** columns; a live length counter turns green or red.
+     Grey cells are already fine.
+   - `H1`: pages with no H1 or with more than one.
+
+**Step 2 – Generate XML**
+
+4. Upload the completed report. Older country docs that only have URL + DEC Title / DEC
+   Description also work: add the crawl of the site in the second drop zone so the app finds the IDs.
+5. Choose the **locale** of the texts and a **catalog** for products (master catalog) and
+   categories (navigation catalog), then download one **XML per type**
+   (`DEC_20261007_YSLBEAUTY_FR_SEO_product_fr.xml`). Content pages go to the site library.
+6. Rows that can't go in the XML are listed on screen with the reason (no ID, not in the crawl,
+   same ID with different texts…).
+
+The catalog list can be changed under **Manage catalogs** (bottom of Step 2). Changes are saved
+in that browser only; "Restore the default list" brings back the built-in list.
+
+### Both tools
 
 If an uploaded `.xlsx` has more than one sheet with data, the app asks which sheet to use.
 It shows each sheet's row count and whether it has the columns that step needs.
@@ -62,16 +97,21 @@ assets/dec-logo.png DEC logo (header + browser tab icon)
 assets/flags/       One SVG flag per country (from the flag-icons package, MIT)
 vendor/             PapaParse and ExcelJS
 
-js/pagetype.js      RULES: accepted page types, crawl columns, Step 1 checks, file names
-js/xml.js           RULES: Step 2 row selection, locale list, XML format
-js/report.js        Builds the Step 1 Excel report
+js/pagetype.js      RULES (Page type): accepted page types, crawl columns, Step 1 checks, file names
+js/xml.js           RULES (Page type): Step 2 row selection, locale list, XML format
+js/report.js        Builds the Page type Excel report
+js/metadata.js      RULES (Metadata): crawl columns, IDs, length ranges, Step 2 rows, text
+                    encoding, XML format, locales, default catalog list
+js/metadata-report.js  Builds the Metadata Excel report
 js/app.js           Shared upload flow (read file, drop zone, spinner, errors, sheet chooser),
-                    download, step tabs, wording helpers
-js/step-report.js   Step 1 screen (upload, result, download)
-js/step-xml.js      Step 2 screen (upload, locales, skipped rows, download)
+                    download, step tabs, sidebar tool switching, wording helpers
+js/step-report.js   Page type Step 1 screen
+js/step-xml.js      Page type Step 2 screen
+js/step-meta-report.js  Metadata Step 1 screen
+js/step-meta-xml.js     Metadata Step 2 screen + "Manage catalogs"
 ```
 
-The **rules** files (`pagetype.js`, `xml.js`) never touch the page. They take data in and give
+The **rules** files (`pagetype.js`, `xml.js`, `metadata.js`) never touch the page. They take data in and give
 data back, which keeps them easy to read and test. The **screen** files (`step-*.js`) only
 handle the page. They are each wrapped in `(() => { ... })();` so their variable names don't
 clash with each other.
@@ -82,7 +122,8 @@ clash with each other.
 
 ### Crawl columns (Step 1), `COLUMN_SPECS` in `js/pagetype.js`
 
-Headers are matched ignoring upper/lower case. A trailing "1" and the word "ID" are optional:
+Headers are matched ignoring upper/lower case. A note in brackets, a trailing "1" and the word
+"ID" are optional (`DEC Title (50-60 characters)` = `DEC Title`):
 `PLP ID 1`, `PLP ID`, `PLP 1` and `PLP` are all accepted, and so is `PAGE DESIGNER` for
 `Page Designer 1`. This also applies in Step 2. Every other column in the file is ignored.
 
@@ -138,6 +179,34 @@ XML format, which must stay exactly like this:
 </library>
 ```
 
+### Metadata, `js/metadata.js`
+
+- **Which pages:** status 200 (if the crawl has Status Code) and not a file (`.jpg`, `.js`,
+  `.png`, `.css`, `.svg`, `.pdf`, `.gif`, `?`, `cdn-cgi`, `demandware` in the URL).
+- **Type and ID** of a page: PLP ID → `category`; else PDP ID → `product`; else Page Designer →
+  `content`; else Content Asset (without `%`) → `content`; else `manual`. Manual pages are in the
+  report but never in the XML: their metadata is changed by hand in Business Manager.
+- **Lengths:** `TITLE_RANGE` (50–60) and `DESCRIPTION_RANGE` (140–155). The report headers and
+  colours follow these values.
+- **Step 2:** empty, `-` and `****` in a DEC column mean "keep the current text". Rows with the
+  same type + ID are merged when their texts agree, and left out when they differ.
+- **Special characters:** `&`, `<`, `>` are escaped and every accent or symbol is written as a
+  code (`é` → `&#233;`), as the old template did. Curly apostrophes become `'`, `–` becomes `-`.
+
+XML format (products and categories use `<catalog … catalog-id="…">`, content uses `<library>`):
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog xmlns="http://www.demandware.com/xml/impex/catalog/2006-10-31" catalog-id="ysl-master-catalog">
+<product product-id="WW-51213YSL">
+	<page-attributes>
+		<page-title xml:lang="fr">…</page-title>
+		<page-description xml:lang="fr">D&#233;couvrez LE PARFUM…</page-description>
+	</page-attributes>
+</product>
+</catalog>
+```
+
 ---
 
 ## 4. Common changes
@@ -148,7 +217,10 @@ XML format, which must stay exactly like this:
 | Accept a new crawl column name          | Usually nothing to do (see the matching rule in section 3). For a name that differs in other ways, add it to `aliases` in `COLUMN_SPECS` (`js/pagetype.js`) |
 | Accept a new column name in Step 2      | Add it to `aliases` in `XML_COLUMN_SPECS` (`js/xml.js`)                     |
 | Add a locale                            | Add it to `XML_LOCALES` in `js/xml.js`. If the country is new, add its flag as `assets/flags/<country>.svg` (4x3 SVG from the flag-icons package, lowercase code, e.g. `pt.svg`). |
-| Change a text on screen                 | `index.html` (fixed text) or `js/step-report.js` / `js/step-xml.js` (results) |
+| Change a text on screen                 | `index.html` (fixed text) or the `js/step-*.js` file of that screen (results) |
+| Change the title/description lengths    | `TITLE_RANGE` / `DESCRIPTION_RANGE` in `js/metadata.js`                     |
+| Add a Metadata locale                   | `META_LOCALES` in `js/metadata.js`                                          |
+| Change the built-in catalog list        | `DEFAULT_CATALOGS` in `js/metadata.js` (users' own changes in "Manage catalogs" stay in their browser) |
 | Change colours or fonts sizes           | Variables at the top of `css/styles.css`                                    |
 | Add a new tool to the sidebar           | New rules file + screen file in `js/`, a section in `index.html`, a link in the sidebar, and the `<script>` tags in the right order |
 
@@ -170,9 +242,17 @@ the **handover zip** (`examples/` folder), not in GitHub, because they contain r
 | 1    | `mugler_fr_crawl.csv`                   | "62 of 252 pages need a page type." (mugler.fr)   |
 | 1    | `lancome_es_custom_extraction_all.csv`  | "62 of 213 pages need a page type." (lancome.es)  |
 | 2    | `lancome_es_completed.csv`              | "196 pages will get their new page type."         |
+| Metadata 1 | `ysl_fr_metadata_crawl.csv`       | "233 of 301 pages need a new title or description." |
+| Metadata 2 | `ysl_fr_country_doc_descriptions.csv` + the crawl above | "183 pages will get new metadata." (137 products, 3 categories, 43 content pages) |
 
 `lancome_es_expected_entries.json` lists the exact 196 `content-id → page type` pairs that the
 original Google Sheet produced for that file. The Step 2 XML must contain exactly those.
+`ysl_fr_expected_products.json` does the same for the 137 Metadata product descriptions.
+
+`examples/` also has test pages that run these checks automatically in a browser
+(`test-columns.html`, `test-sheet-picker.html`, `test-metadata.html`, `test-metadata-ui.html`).
+Serve the project folder (`python3 -m http.server 8765`) and open them, e.g.
+`http://localhost:8765/examples/test-metadata.html`.
 
 Also check quickly:
 - Download the Excel report and open it. The dropdown appears on the empty cells.
@@ -205,8 +285,8 @@ Version history: see `git log`.
   and nothing else.
 - **Handover zip** (keep it on a team shared drive, not in GitHub):
   - `examples/`: test files and expected results (section 5).
-  - `legacy/`: the original Google Sheets templates, their Apps Script, the "Master Key" image,
-    the wireframe and the logo source.
+  - `legacy/`: the original Google Sheets templates (Page type and Metadata), their Apps Script,
+    the "Master Key" image, the wireframe and the logo source.
   - `CLAUDE.md`: the same knowledge as this file, written for the Claude Code AI assistant.
     If you use Claude Code, put it in the project folder and Claude will follow it
     automatically.
