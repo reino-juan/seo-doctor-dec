@@ -1,6 +1,6 @@
 // Metadata rules: crawl columns, page IDs, title/description/H1 checks (Step 1) and the
 // SFCC catalog/library import XML (Step 2). Pure functions, no DOM. Relies on pagetype.js
-// (mapColumns, headerKey, siteName) and xml.js (escapeAttr).
+// (mapColumns, headerKey, siteName) and xml.js (escapeAttr; XML_LOCALES is the locale list).
 
 // Crawl columns. Loose header matching (headerKey in pagetype.js): "Title 1" = "Title",
 // "PAGE DESIGNER ID 1" = "Page Designer"… Every other column is ignored.
@@ -202,14 +202,17 @@ function encodeMetaText(text) {
 
 /**
  * Builds the import XML for one type: a catalog (products, categories) or the library (content).
+ * Each text is written once per locale (titles first, then descriptions).
  */
-function buildMetaXml(type, entries, { locale, catalog }) {
+function buildMetaXml(type, entries, { locales, catalog }) {
   const { element } = META_TYPES.find((t) => t.type === type);
-  const lang = escapeAttr(locale);
+  const langs = locales.map(escapeAttr);
   const blocks = entries.map(({ id, title, description }) => {
     const lines = [`<${element} ${element}-id="${escapeAttr(id)}">`, '\t<page-attributes>'];
-    if (title) lines.push(`\t\t<page-title xml:lang="${lang}">${encodeMetaText(title)}</page-title>`);
-    if (description) lines.push(`\t\t<page-description xml:lang="${lang}">${encodeMetaText(description)}</page-description>`);
+    if (title) langs.forEach((lang) => lines.push(`\t\t<page-title xml:lang="${lang}">${encodeMetaText(title)}</page-title>`));
+    if (description) {
+      langs.forEach((lang) => lines.push(`\t\t<page-description xml:lang="${lang}">${encodeMetaText(description)}</page-description>`));
+    }
     lines.push('\t</page-attributes>', `</${element}>`);
     return lines.join('\n');
   });
@@ -228,21 +231,16 @@ const siteCode = (url) => siteName(url).replace(/\./g, '_').toUpperCase();
 /** YSLBEAUTY_FR_Metadata.xlsx */
 const metaReportFileName = (firstUrl) => `${siteCode(firstUrl) || 'Export'}_Metadata.xlsx`;
 
-/** DEC_20261007_YSLBEAUTY_FR_SEO_product_fr.xml (same pattern as the legacy template). */
-function metaXmlFileName(firstUrl, type, locale, date = new Date()) {
+/**
+ * DEC_20261007_YSLBEAUTY_FR_SEO_product_fr-FR.xml (legacy pattern). Up to three locales are
+ * listed (fr-BE_nl-BE); more become "5-locales".
+ */
+function metaXmlFileName(firstUrl, type, locales, date = new Date()) {
   const pad = (n) => String(n).padStart(2, '0');
   const day = `${date.getFullYear()}${pad(date.getMonth() + 1)}${pad(date.getDate())}`;
-  return `DEC_${day}_${siteCode(firstUrl) || 'SITE'}_SEO_${type}_${locale}.xml`;
+  const langs = locales.length <= 3 ? locales.join('_') : `${locales.length}-locales`;
+  return `DEC_${day}_${siteCode(firstUrl) || 'SITE'}_SEO_${type}_${langs}.xml`;
 }
-
-// Locales offered for the page-attributes (one per file). Language-only values (fr, de…) are
-// used by sites that share one locale per language; from the legacy template plus the Page type list.
-const META_LOCALES = [
-  'fr', 'fr-FR', 'es-ES', 'en-GB', 'de', 'de-DE', 'it-IT',
-  'nl', 'nl-NL', 'nl-BE', 'fr-BE', 'en', 'en-IE', 'de-AT', 'de-CH', 'fr-CH', 'en-CH',
-  'pl-PL', 'ro', 'ro-RO', 'cs-CZ', 'sk-SK', 'hu-HU', 'bg-BG', 'hr-HR', 'sl-SI', 'sr-RS',
-  'sv-SE', 'da-DK', 'no-NO', 'tr-TR', 'he-IL', 'ar-AE', 'fr-MD',
-];
 
 // SFCC catalogs offered by default (from the legacy template). Users can add or remove catalogs
 // in the app; their list is kept in the browser (see step-meta-xml.js).
@@ -271,10 +269,11 @@ const DEFAULT_CATALOGS = [
 ];
 
 /**
- * Catalogs that fit a type: products live in master catalogs, categories in navigation catalogs.
- * A catalog named neither way is offered for both.
+ * All catalogs, the ones that fit the type first: products usually live in a master catalog,
+ * categories in a navigation catalog. Nothing is hidden, since naming isn't always consistent.
  */
 function catalogsFor(type, catalogs) {
   const kind = (name) => (/navigation/i.test(name) ? 'category' : /master/i.test(name) ? 'product' : '');
-  return catalogs.filter((name) => !kind(name) || kind(name) === type);
+  const fits = (name) => !kind(name) || kind(name) === type;
+  return [...catalogs.filter(fits), ...catalogs.filter((name) => !fits(name))];
 }

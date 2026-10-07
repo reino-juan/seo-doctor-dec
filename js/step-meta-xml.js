@@ -1,5 +1,5 @@
-// Metadata Step 2 UI: upload the completed report (plus the crawl when it has no IDs), pick the
-// locale and catalogs, download one XML per type. Also the "Manage catalogs" settings.
+// Metadata Step 2 UI: upload the completed report (plus the crawl when it has no IDs), tick the
+// locales and type the catalogs, download one XML per type. Also the "Manage catalogs" settings.
 // Relies on metadata.js and app.js, loaded before it in index.html.
 (() => {
   const CATALOGS_KEY = 'seo-dector.catalogs'; // localStorage: the user's catalog list
@@ -12,7 +12,7 @@
   const skippedTitle = document.getElementById('metax-skipped-title');
   const skippedRows = document.getElementById('metax-skipped-rows');
   const settings = document.getElementById('metax-settings');
-  const localeSelect = document.getElementById('metax-locale');
+  const localeList = document.getElementById('metax-locales');
   const exportList = document.getElementById('metax-exports');
   const hint = document.getElementById('metax-hint');
   const crawlDetails = document.getElementById('metac-details');
@@ -20,10 +20,11 @@
   let records = null; // rows of the completed report
   let crawlPages = null; // pages of the optional crawl
   let result = null; // buildMetaEntries
-  const chosenCatalog = {}; // type -> catalog picked in this session
+  const chosenCatalog = {}; // type -> catalog typed or picked in this session
 
-  localeSelect.append(new Option('Choose a locale', ''), ...META_LOCALES.map((locale) => new Option(locale, locale)));
-  localeSelect.addEventListener('change', updateButtons);
+  // Same locale list and checkboxes as Page type (xml.js), but no forced x-default: a title
+  // written to x-default would become the fallback of every locale of the site.
+  const localeChoice = localeCheckboxes(localeList, () => updateButtons());
 
   const intake = createIntake({
     input: document.getElementById('metax-file'),
@@ -92,7 +93,7 @@
       setFinding(finding, total, `${plural(total, 'page', 'pages')} will get new metadata.`);
       const parts = counts.map((t) => `${t.count} ${plural(t.count, t.one, t.many)}`);
       const list = parts.length > 1 ? `${parts.slice(0, -1).join(', ')} and ${parts.at(-1)}` : parts[0];
-      advice.textContent = `${list}. Choose the locale of the texts and the catalogs, then download one XML per type.${addCrawl}`;
+      advice.textContent = `${list}. Tick the locales of the texts, choose the catalogs, then download one XML per type.${addCrawl}`;
     } else {
       finding.textContent = 'No pages to update.';
       advice.textContent = addCrawl
@@ -138,17 +139,24 @@
         row.append(label);
 
         if (t.catalog) {
-          const select = document.createElement('select');
-          select.className = 'select';
-          select.setAttribute('aria-label', `Catalog for ${t.many}`);
-          const options = catalogsFor(t.type, catalogs);
-          select.append(new Option('Choose a catalog', ''), ...options.map((name) => new Option(name, name)));
-          select.value = options.includes(chosenCatalog[t.type]) ? chosenCatalog[t.type] : '';
-          select.addEventListener('change', () => {
-            chosenCatalog[t.type] = select.value;
+          // A text field with suggestions: any catalog ID can be typed, listed or not.
+          const input = document.createElement('input');
+          input.type = 'text';
+          input.className = 'text-input catalog-input';
+          input.autocomplete = 'off';
+          input.spellcheck = false;
+          input.placeholder = t.type === 'product' ? 'Master catalog, e.g. ysl-master-catalog' : 'Navigation catalog, e.g. ysl-fr-navigation-ng';
+          input.setAttribute('aria-label', `Catalog for ${t.many}`);
+          input.value = chosenCatalog[t.type] ?? '';
+          const options = document.createElement('datalist');
+          options.id = `metax-catalogs-${t.type}`;
+          options.append(...catalogsFor(t.type, catalogs).map((name) => new Option(name)));
+          input.setAttribute('list', options.id);
+          input.addEventListener('input', () => {
+            chosenCatalog[t.type] = input.value.trim();
             updateButtons();
           });
-          row.append(select);
+          row.append(input, options);
         } else {
           const note = document.createElement('span');
           note.className = 'export-note';
@@ -160,7 +168,7 @@
         button.type = 'button';
         button.className = 'btn btn-primary';
         button.textContent = 'Download XML';
-        button.addEventListener('click', () => download(t.type, row.querySelector('select')?.value ?? ''));
+        button.addEventListener('click', () => download(t.type, chosenCatalog[t.type] ?? ''));
         row.append(button);
         return row;
       })
@@ -169,23 +177,25 @@
   }
 
   function updateButtons() {
-    const locale = localeSelect.value;
+    const noLocale = localeChoice.selected().length === 0;
     let needsCatalog = false;
     exportList.querySelectorAll('.export-row').forEach((row) => {
-      const select = row.querySelector('select');
-      const missingCatalog = select ? !select.value : false;
+      const needs = META_TYPES.find((t) => t.type === row.dataset.type).catalog;
+      const missingCatalog = needs && !chosenCatalog[row.dataset.type];
       needsCatalog ||= missingCatalog;
-      row.querySelector('button').disabled = !locale || missingCatalog;
+      row.querySelector('button').disabled = noLocale || missingCatalog;
     });
-    const missing = [!locale && 'a locale', needsCatalog && 'a catalog'].filter(Boolean);
+    const missing = [noLocale && 'at least one locale', needsCatalog && 'a catalog'].filter(Boolean);
     hint.textContent = missing.length ? `Choose ${missing.join(' and ')} to download.` : '';
     hint.hidden = !missing.length;
   }
 
   function download(type, catalog) {
-    const locale = localeSelect.value;
-    const xml = buildMetaXml(type, result.byType[type], { locale, catalog });
-    downloadBlob(new Blob([xml], { type: 'application/xml' }), metaXmlFileName(records[0]?.URL, type, locale));
+    const locales = localeChoice.selected();
+    const xml = buildMetaXml(type, result.byType[type], { locales, catalog });
+    downloadBlob(new Blob([xml], { type: 'application/xml' }), metaXmlFileName(records[0]?.URL, type, locales));
+    // A catalog typed by hand joins the user's list, so it's suggested next time.
+    if (catalog && !catalogs.includes(catalog)) setCatalogs([...catalogs, catalog]);
   }
 
   // ---------- Manage catalogs (kept in this browser) ----------

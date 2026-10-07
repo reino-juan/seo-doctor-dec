@@ -55,9 +55,11 @@ website. It has two tools in the sidebar, each with two steps (two tabs):
 4. Upload the completed report. Older country docs that only have URL + DEC Title / DEC
    Description also work: open **Add the crawl of the site (optional)** and drop the crawl so the
    app finds the IDs. The section opens by itself when the file needs it.
-5. Choose the **locale** of the texts and a **catalog** for products (master catalog) and
-   categories (navigation catalog), then download one **XML per type**
-   (`DEC_20261007_YSLBEAUTY_FR_SEO_product_fr.xml`). Content pages go to the site library.
+5. Tick the **locales** of the texts (same list as Page type; each text is written once per
+   locale) and type or pick a **catalog** for products (master catalog) and categories
+   (navigation catalog), then download one **XML per type**
+   (`DEC_20261007_YSLBEAUTY_FR_SEO_product_fr-FR.xml`). Content pages go to the site library.
+   Any catalog ID can be typed; a new one is added to the list when you download.
 6. Rows that can't go in the XML are listed on screen with the reason (no ID, not in the crawl,
    same ID with different texts…).
 
@@ -217,10 +219,9 @@ XML format (products and categories use `<catalog … catalog-id="…">`, conten
 | Accept a new page type value            | `ACCEPTED_PAGE_TYPES` in `js/pagetype.js`. It updates the Excel dropdown and the XML check. |
 | Accept a new crawl column name          | Usually nothing to do (see the matching rule in section 3). For a name that differs in other ways, add it to `aliases` in `COLUMN_SPECS` (`js/pagetype.js`) |
 | Accept a new column name in Step 2      | Add it to `aliases` in `XML_COLUMN_SPECS` (`js/xml.js`)                     |
-| Add a locale                            | Add it to `XML_LOCALES` in `js/xml.js`. If the country is new, add its flag as `assets/flags/<country>.svg` (4x3 SVG from the flag-icons package, lowercase code, e.g. `pt.svg`). |
+| Add a locale (both tools)               | Add it to `XML_LOCALES` in `js/xml.js`. If the country is new, add its flag as `assets/flags/<country>.svg` (4x3 SVG from the flag-icons package, lowercase code, e.g. `pt.svg`). |
 | Change a text on screen                 | `index.html` (fixed text) or the `js/step-*.js` file of that screen (results) |
 | Change the title/description lengths    | `TITLE_RANGE` / `DESCRIPTION_RANGE` in `js/metadata.js`                     |
-| Add a Metadata locale                   | `META_LOCALES` in `js/metadata.js`                                          |
 | Change the built-in catalog list        | `DEFAULT_CATALOGS` in `js/metadata.js` (users' own changes in "Manage catalogs" stay in their browser) |
 | Change colours or fonts sizes           | Variables at the top of `css/styles.css`                                    |
 | Add a new tool to the sidebar           | New rules file + screen file in `js/`, a section in `index.html`, a link in the sidebar, and the `<script>` tags in the right order |

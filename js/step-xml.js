@@ -15,16 +15,8 @@
 
   let entries = [];
 
-  // Flag = country part of the locale (es-ES -> assets/flags/es.svg).
-  localeList.innerHTML = XML_LOCALES.map((locale) => {
-    const country = locale.split('-')[1].toLowerCase();
-    return `<label class="locale"><input type="checkbox" value="${locale}" />
-      <img class="flag" src="assets/flags/${country}.svg" alt="" width="20" height="15" /> ${locale}</label>`;
-  }).join('');
-  const localeBoxes = [...localeList.querySelectorAll('input')];
-  const selectedLocales = () => localeBoxes.filter((box) => box.checked).map((box) => box.value);
-
-  localeList.addEventListener('change', updateDownload);
+  const localeChoice = localeCheckboxes(localeList, () => updateDownload());
+  const selectedLocales = localeChoice.selected;
 
   const intake = createIntake({
     input: document.getElementById('xml-file'),
@@ -41,7 +33,7 @@
       entries = [];
       resultBox.hidden = true;
       skippedBox.hidden = true;
-      localeBoxes.forEach((box) => (box.checked = false));
+      localeChoice.clear();
     },
     onRows: (rows) => {
       const { records, missing } = mapColumns(rows, XML_COLUMN_SPECS);

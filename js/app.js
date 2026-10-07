@@ -150,6 +150,25 @@ function createIntake({ input, dropzone, fileName, loading, clearButton, errorBo
   return { showError };
 }
 
+/**
+ * Fills `container` with one checkbox per locale of XML_LOCALES (xml.js), each with its country
+ * flag (es-ES -> assets/flags/es.svg). Calls onChange when a box changes.
+ * Returns { selected: () => ['es-ES', …], clear: () => void }.
+ */
+function localeCheckboxes(container, onChange) {
+  container.innerHTML = XML_LOCALES.map((locale) => {
+    const country = locale.split('-')[1].toLowerCase();
+    return `<label class="locale"><input type="checkbox" value="${locale}" />
+      <img class="flag" src="assets/flags/${country}.svg" alt="" width="20" height="15" /> ${locale}</label>`;
+  }).join('');
+  const boxes = [...container.querySelectorAll('input')];
+  container.addEventListener('change', onChange);
+  return {
+    selected: () => boxes.filter((box) => box.checked).map((box) => box.value),
+    clear: () => boxes.forEach((box) => (box.checked = false)),
+  };
+}
+
 /** plural(1, 'page', 'pages') -> 'page'; plural(2, ...) -> 'pages'. */
 const plural = (count, one, many) => (count === 1 ? one : many);
 

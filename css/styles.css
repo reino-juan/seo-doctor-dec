@@ -629,18 +629,6 @@ body {
   gap: 20px;
 }
 
-.field {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  max-width: 240px;
-}
-
-.field-label {
-  font-weight: 700;
-}
-
-.select,
 .text-input {
   min-height: 40px;
   padding: 6px 10px;
@@ -662,6 +650,11 @@ body {
   gap: 16px;
   padding: 12px 0;
   border-bottom: 1px solid var(--rule);
+}
+
+.catalog-input {
+  width: 100%;
+  min-width: 0;
 }
 
 .export-name {
