@@ -15,6 +15,7 @@
   const localeSelect = document.getElementById('metax-locale');
   const exportList = document.getElementById('metax-exports');
   const hint = document.getElementById('metax-hint');
+  const crawlDetails = document.getElementById('metac-details');
 
   let records = null; // rows of the completed report
   let crawlPages = null; // pages of the optional crawl
@@ -84,7 +85,7 @@
     const total = counts.reduce((sum, t) => sum + t.count, 0);
     const addCrawl =
       result.needCrawl > 0
-        ? ` ${result.needCrawl} ${plural(result.needCrawl, 'row has', 'rows have')} no type or ID: add the crawl of the site above to include ${plural(result.needCrawl, 'it', 'them')}.`
+        ? ` ${result.needCrawl} ${plural(result.needCrawl, 'row has', 'rows have')} no type or ID: add the crawl of the site (optional section above) to include ${plural(result.needCrawl, 'it', 'them')}.`
         : '';
 
     if (total > 0) {
@@ -100,6 +101,7 @@
           ? 'Every row with a new text was left out. Check the rows below.'
           : 'No row has a DEC Title or DEC Description filled in.';
     }
+    if (result.needCrawl > 0) crawlDetails.open = true;
     settings.hidden = total === 0;
     showSkipped(result.skipped);
     renderExports(counts);

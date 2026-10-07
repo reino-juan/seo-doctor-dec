@@ -53,7 +53,8 @@ website. It has two tools in the sidebar, each with two steps (two tabs):
 **Step 2 – Generate XML**
 
 4. Upload the completed report. Older country docs that only have URL + DEC Title / DEC
-   Description also work: add the crawl of the site in the second drop zone so the app finds the IDs.
+   Description also work: open **Add the crawl of the site (optional)** and drop the crawl so the
+   app finds the IDs. The section opens by itself when the file needs it.
 5. Choose the **locale** of the texts and a **catalog** for products (master catalog) and
    categories (navigation catalog), then download one **XML per type**
    (`DEC_20261007_YSLBEAUTY_FR_SEO_product_fr.xml`). Content pages go to the site library.

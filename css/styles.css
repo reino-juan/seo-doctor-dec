@@ -544,8 +544,76 @@ body {
 
 /* ---------- Metadata: optional crawl, export rows, catalog settings ---------- */
 
-.intake-extra {
+.optional-crawl {
   margin-top: 24px;
+  border-top: 1px solid var(--rule);
+}
+
+.optional-crawl summary {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 14px 0 14px 22px;
+}
+
+/* Collapsible sections share one disclosure chevron: right when closed, down when open. */
+.optional-crawl summary,
+.catalog-settings summary {
+  position: relative;
+  list-style: none;
+  cursor: pointer;
+}
+
+.optional-crawl summary::-webkit-details-marker,
+.catalog-settings summary::-webkit-details-marker {
+  display: none;
+}
+
+.optional-crawl summary::before,
+.catalog-settings summary::before {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 21px;
+  width: 7px;
+  height: 7px;
+  border-right: 2px solid var(--slate);
+  border-bottom: 2px solid var(--slate);
+  transform: rotate(-45deg);
+  transition: transform 120ms;
+}
+
+.optional-crawl[open] summary::before,
+.catalog-settings[open] summary::before {
+  transform: rotate(45deg);
+}
+
+.optional-crawl summary:hover .optional-title {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.optional-title {
+  font-weight: 700;
+}
+
+.optional-tag {
+  margin-left: 8px;
+  padding: 1px 8px;
+  border: 1px solid var(--rule-strong);
+  border-radius: 999px;
+  color: var(--slate);
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+.optional-sub {
+  color: var(--slate);
+  font-size: var(--text-sm);
+}
+
+.optional-crawl > .intake {
+  padding: 0 0 20px;
 }
 
 .dropzone-small {
@@ -616,8 +684,12 @@ body {
 }
 
 .catalog-settings summary {
+  padding-left: 22px;
   font-weight: 700;
-  cursor: pointer;
+}
+
+.catalog-settings summary::before {
+  top: 7px;
 }
 
 .catalog-add {
@@ -773,7 +845,9 @@ body {
     animation: none;
   }
 
-  .dropzone {
+  .dropzone,
+  .optional-crawl summary::before,
+  .catalog-settings summary::before {
     transition: none;
   }
 }

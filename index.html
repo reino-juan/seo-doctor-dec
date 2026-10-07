@@ -200,7 +200,7 @@
               </button>
               <p id="metax-help" class="hint">
                 Needs the columns URL and DEC Title and/or DEC Description. Type and ID come from the
-                Step 1 report; for files without them, add the crawl below.
+                Step 1 report; for files without them, add the crawl (optional, below).
               </p>
               <div class="file-row">
                 <span id="metax-file-name" class="file-name"></span>
@@ -216,28 +216,33 @@
               <p id="metax-upload-error" class="error" role="alert" hidden></p>
             </section>
 
-            <section class="intake intake-extra">
-              <input type="file" id="metac-file" accept=".csv,.xlsx" hidden />
-              <button id="metac-upload-button" class="dropzone dropzone-small" type="button" aria-describedby="metac-help">
-                <span class="dropzone-title">Optional: drop the crawl of the site here</span>
-                <span class="dropzone-sub">or click to choose a .csv or .xlsx file</span>
-              </button>
-              <p id="metac-help" class="hint">
-                Only needed when the file has no Type and ID columns, such as an older country doc.
-              </p>
-              <div class="file-row">
-                <span id="metac-file-name" class="file-name"></span>
-                <span id="metac-loading" class="loading" role="status" hidden>Reading file…</span>
-                <span id="metac-sheet-name" class="sheet-name"></span>
-                <button id="metac-change-sheet" class="btn btn-quiet" type="button" hidden>Change sheet</button>
-                <button id="metac-clear-button" class="btn btn-quiet" type="button" hidden>Remove crawl</button>
-              </div>
-              <div id="metac-sheet-picker" class="sheet-picker" role="group" aria-labelledby="metac-sheet-picker-title" hidden>
-                <p id="metac-sheet-picker-title" class="sheet-picker-title"></p>
-                <div class="sheet-options"></div>
-              </div>
-              <p id="metac-upload-error" class="error" role="alert" hidden></p>
-            </section>
+            <details id="metac-details" class="optional-crawl">
+              <summary>
+                <span class="optional-title">Add the crawl of the site <span class="optional-tag">Optional</span></span>
+                <span id="metac-help" class="optional-sub">
+                  Only needed when the file has no Type and ID columns, such as an older country doc.
+                </span>
+              </summary>
+              <section class="intake">
+                <input type="file" id="metac-file" accept=".csv,.xlsx" hidden />
+                <button id="metac-upload-button" class="dropzone dropzone-small" type="button" aria-describedby="metac-help">
+                  <span class="dropzone-title">Drop the crawl here</span>
+                  <span class="dropzone-sub">or click to choose a .csv or .xlsx file</span>
+                </button>
+                <div class="file-row">
+                  <span id="metac-file-name" class="file-name"></span>
+                  <span id="metac-loading" class="loading" role="status" hidden>Reading file…</span>
+                  <span id="metac-sheet-name" class="sheet-name"></span>
+                  <button id="metac-change-sheet" class="btn btn-quiet" type="button" hidden>Change sheet</button>
+                  <button id="metac-clear-button" class="btn btn-quiet" type="button" hidden>Remove crawl</button>
+                </div>
+                <div id="metac-sheet-picker" class="sheet-picker" role="group" aria-labelledby="metac-sheet-picker-title" hidden>
+                  <p id="metac-sheet-picker-title" class="sheet-picker-title"></p>
+                  <div class="sheet-options"></div>
+                </div>
+                <p id="metac-upload-error" class="error" role="alert" hidden></p>
+              </section>
+            </details>
 
             <section id="metax-result" class="diagnosis" aria-live="polite" hidden>
               <p id="metax-site" class="patient"></p>
@@ -288,7 +293,10 @@
     <footer class="footer">
       <p>Created by Juan Reino. <a href="mailto:juan.reino@loreal.com">juan.reino@loreal.com</a></p>
       <!-- Bump on each release; see "Versioning" in CLAUDE.md. -->
-      <p class="version">Version 1.4.0</p>
+      <p class="version">
+        Version 1.4.1 ·
+        <a href="https://github.com/reino-juan/seo-doctor-dec" target="_blank" rel="noopener">Source code on GitHub</a>
+      </p>
     </footer>
   </body>
 </html>
