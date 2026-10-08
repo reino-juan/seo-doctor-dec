@@ -28,7 +28,9 @@ code) to `js/bookmarklets.js`.
 
 **Screaming Frog profiles** (bottom of the sidebar) links to the DEC SharePoint folder with the
 latest Screaming Frog profiles (custom extraction for Page Designer ID, GEO page type…). If the
-folder moves, change the link in `index.html` (section `sf-profiles`).
+folder moves, change the link in `index.html` (section `sf-profiles`). Page type, Metadata and H1
+need the **Custom Extraction** tab export of a crawl run with that profile; their upload hints say
+so and link to this page.
 
 **Settings** (bottom of the sidebar) holds the lists the tools share: the **locales** offered as
 checkboxes in Page type and Metadata, and the **catalogs** suggested in Metadata. Add, remove or
