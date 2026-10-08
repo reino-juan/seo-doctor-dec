@@ -88,6 +88,8 @@ itself.
    note "Footer link on 789 pages: fix it once in the template". Links in the page content are
    kept once per page (repeats on the same page are merged).
 3. Download `KIEHLS_ES_4xx_5xx_errors.xlsx` and send it to the webmasters:
+   - `Instructions`: how to read and work through the file (the same text as "How to read the
+     report" in the app; edit `ERRORS_GUIDE` in `js/errors.js` to change it).
    - `Links to fix`: Source, Destination, Anchor (alt text for images), Status Code, Type, Link
      Path, Link Position, Link Origin, Note. Template links come first, in bold.
    - `To check`: links that are probably fine for visitors: Cloudflare email protection, pages

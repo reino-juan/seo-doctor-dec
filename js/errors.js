@@ -123,5 +123,63 @@ function groupErrors(rows) {
   };
 }
 
+// How to read the report: shown in the app ("How to read the report") and as the first sheet of
+// the Excel file, so webmasters get the explanation with the list.
+const ERRORS_GUIDE = [
+  {
+    title: 'Links to fix',
+    items: [
+      'Each broken link appears once.',
+      'Columns: Source, Destination, Anchor, Status Code, Type, Link Path, Link Position, Link Origin, plus a Note. For images, the alt text goes in the Anchor column.',
+      'Header, footer and menu links appear once, in bold, with a note like "Footer link on 789 pages: fix it once in the template". Fixing the template removes the error from every page.',
+      'Content links appear once per page: if a page links to the same URL several times, that is one row.',
+      'The Note also flags links to a staging site, template code left in the URL (e.g. …/${URLUtils.url…}), external sites and server errors (5xx, may be temporary).',
+    ],
+  },
+  {
+    title: 'To check',
+    items: [
+      'Likely false positives: open each Destination in a browser before changing anything.',
+      'Cloudflare email protection links (/cdn-cgi/l/email-protection): they fail for the crawler but work in a browser.',
+      '401/403 on the site itself: often the site blocking the crawler (bot protection) or a login page.',
+      'Links that got no response: check again, it may have been temporary.',
+      'If the page works in a browser, there is nothing to fix. If it is really broken, treat it like the links to fix: a header or footer link is the most important fix of all, since one change clears it on every page.',
+    ],
+  },
+  {
+    title: 'How to work through it',
+    items: [
+      'Start with the bold rows: one change in the template fixes them on every page.',
+      'Then the content links: open the Source page and look for the Anchor text (or the image with that alt text). Change the link to a working URL or remove it.',
+      'To find a link on the page, the Link Path is its exact position (XPath). The XPath locator, a bookmarklet in the Bookmarklets section of SEO DECtor (coming soon), highlights on the page the element a Link Path points to.',
+    ],
+  },
+  {
+    title: 'Columns',
+    items: [
+      'Source: the page that contains the broken link (for template links, one example page).',
+      'Destination: the broken URL the link points to.',
+      'Anchor: the clickable text of the link (the alt text for images).',
+      'Status Code: the error the Destination returned (404 not found, 410 gone, 401/403 access denied, 5xx server error, 0 no response).',
+      'Type: Hyperlink, Image, or HTTP Redirect (the Source redirects to the broken URL).',
+      'Link Path: the XPath of the link in the page HTML.',
+      'Link Position: where Screaming Frog found the link (Navigation, Header, Footer, Sidebar or Content).',
+      'Link Origin: HTML (in the page source), Dynamic (added by JavaScript) or HTTP (a redirect).',
+      'Note: why the link is probably broken, and how many pages a template link appears on.',
+    ],
+  },
+];
+
+/** One-sentence summary of a groupErrors result, e.g. for the Instructions sheet. */
+function errorsSummary({ links, toCheck, rows }) {
+  const template = links.filter((link) => link.template).length;
+  const s = (n, one, many) => `${n.toLocaleString('en')} ${n === 1 ? one : many}`;
+  return (
+    `This export had ${s(rows, 'row', 'rows')}: ${s(links.length, 'link', 'links')} to fix ` +
+    `(${s(template, 'template link', 'template links')}, ${links.length - template} in page content) ` +
+    `and ${toCheck.length} to check.`
+  );
+}
+
 /** KIEHLS_ES_4xx_5xx_errors.xlsx */
 const errorsReportFileName = (firstUrl) => `${siteCode(firstUrl) || 'Export'}_4xx_5xx_errors.xlsx`;

@@ -9,6 +9,24 @@
 
   let grouped = null; // groupErrors result
 
+  // "How to read the report": the same guide as the report's Instructions sheet.
+  document.getElementById('errors-guide').replaceChildren(
+    ...ERRORS_GUIDE.flatMap(({ title, items }) => {
+      const heading = document.createElement('h3');
+      heading.className = 'guide-title';
+      heading.textContent = title;
+      const list = document.createElement('ul');
+      list.append(
+        ...items.map((item) => {
+          const li = document.createElement('li');
+          li.textContent = item;
+          return li;
+        })
+      );
+      return [heading, list];
+    })
+  );
+
   const intake = createIntake({
     input: document.getElementById('errors-file'),
     dropzone: document.getElementById('errors-upload-button'),

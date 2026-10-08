@@ -571,17 +571,20 @@ body {
 }
 
 /* Disclosure chevron: right when closed, down when open. */
-.optional-crawl summary {
+.optional-crawl summary,
+.disclosure summary {
   position: relative;
   list-style: none;
   cursor: pointer;
 }
 
-.optional-crawl summary::-webkit-details-marker {
+.optional-crawl summary::-webkit-details-marker,
+.disclosure summary::-webkit-details-marker {
   display: none;
 }
 
-.optional-crawl summary::before {
+.optional-crawl summary::before,
+.disclosure summary::before {
   content: '';
   position: absolute;
   left: 4px;
@@ -594,7 +597,8 @@ body {
   transition: transform 120ms;
 }
 
-.optional-crawl[open] summary::before {
+.optional-crawl[open] summary::before,
+.disclosure[open] summary::before {
   transform: rotate(45deg);
 }
 
@@ -688,6 +692,43 @@ body {
 .hint a {
   color: var(--ink);
   text-underline-offset: 2px;
+}
+
+/* A collapsible explanation (e.g. "How to read the report"). */
+.disclosure {
+  margin-top: 16px;
+}
+
+.disclosure summary {
+  padding: 4px 0 4px 22px;
+  font-weight: 700;
+}
+
+.disclosure summary::before {
+  top: 10px;
+}
+
+.guide {
+  max-width: 68ch;
+  padding: 4px 0 8px 22px;
+  color: var(--slate);
+  font-size: var(--text-sm);
+}
+
+.guide-title {
+  margin: 16px 0 4px;
+  color: var(--ink);
+  font-size: var(--text-base);
+  font-weight: 700;
+}
+
+.guide ul {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.guide li + li {
+  margin-top: 4px;
 }
 
 /* ---------- Settings ---------- */
@@ -897,7 +938,8 @@ body {
   }
 
   .dropzone,
-  .optional-crawl summary::before {
+  .optional-crawl summary::before,
+  .disclosure summary::before {
     transition: none;
   }
 }
