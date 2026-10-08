@@ -22,6 +22,10 @@ website. It has three tools in the sidebar:
 - **4xx & 5xx errors** (one step): turns Screaming Frog's broken-link export into a clean list of
   links to fix (section 1d).
 
+**Bookmarklets** (bottom of the sidebar) lists the team's bookmarklets: open one with its arrow
+to copy the code or drag it to the bookmarks bar. To add one, add an entry (name, description,
+code) to `js/bookmarklets.js`.
+
 **Settings** (bottom of the sidebar) holds the lists the tools share: the **locales** offered as
 checkboxes in Page type and Metadata, and the **catalogs** suggested in Metadata. Add, remove or
 "Restore the default list". Changes are saved in that browser only.
@@ -151,6 +155,8 @@ js/errors-report.js Builds the 4xx & 5xx Excel report
 js/step-errors.js   4xx & 5xx screen
 js/settings.js      Shared locale + catalog lists (saved in the browser), flags
 js/step-settings.js Settings screen
+js/bookmarklets.js  The bookmarklets (name, description, code exactly as it should be bookmarked)
+js/step-bookmarklets.js Bookmarklets screen
 ```
 
 The **rules** files (`pagetype.js`, `xml.js`, `metadata.js`, `h1.js`, `errors.js`) never touch the page. They take data in and give

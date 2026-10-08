@@ -151,7 +151,7 @@ const ERRORS_GUIDE = [
     items: [
       'Start with the bold rows: one change in the template fixes them on every page.',
       'Then the content links: open the Source page and look for the Anchor text (or the image with that alt text). Change the link to a working URL or remove it.',
-      'To find a link on the page, the Link Path is its exact position (XPath). The XPath locator, a bookmarklet in the Bookmarklets section of SEO DECtor (coming soon), highlights on the page the element a Link Path points to.',
+      'To find a link on the page, the Link Path is its exact position (XPath). The XPath locator, a bookmarklet in the Bookmarklets section of SEO DECtor, highlights on the page the element a Link Path points to: open the Source page, click the bookmarklet and paste the Link Path.',
     ],
   },
   {

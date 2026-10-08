@@ -19,6 +19,7 @@
     <script defer src="js/errors.js"></script>
     <script defer src="js/errors-report.js"></script>
     <script defer src="js/settings.js"></script>
+    <script defer src="js/bookmarklets.js"></script>
     <script defer src="js/app.js"></script>
     <script defer src="js/step-report.js"></script>
     <script defer src="js/step-xml.js"></script>
@@ -27,6 +28,7 @@
     <script defer src="js/step-h1.js"></script>
     <script defer src="js/step-errors.js"></script>
     <script defer src="js/step-settings.js"></script>
+    <script defer src="js/step-bookmarklets.js"></script>
   </head>
   <body>
     <header class="masthead">
@@ -44,6 +46,7 @@
         <a class="tool" href="#errors">4xx &amp; 5xx errors</a>
         <p class="tool-soon">More checks coming soon</p>
         <a class="tool tool-settings" href="#settings">Settings</a>
+        <a class="tool tool-extra" href="#bookmarklets">Bookmarklets</a>
       </nav>
 
       <main class="sheet" id="page-type">
@@ -413,13 +416,25 @@
           </section>
         </div>
       </main>
+
+      <main class="sheet" id="bookmarklets" hidden>
+        <div class="sheet-inner">
+          <h2 class="tool-title">Bookmarklets</h2>
+          <p class="tool-intro">
+            Small tools that run on the page you're viewing. To install one, show your bookmarks bar
+            (Ctrl+Shift+B, or ⌘+Shift+B on a Mac) and drag its button there, or create a new bookmark
+            and paste the copied code as its URL. Then click the bookmark on any page of the site.
+          </p>
+          <div id="bookmarklet-list" class="bookmarklets"></div>
+        </div>
+      </main>
     </div>
 
     <footer class="footer">
       <p>Created by Juan Reino. <a href="mailto:juan.reino@loreal.com">juan.reino@loreal.com</a></p>
       <!-- Bump on each release; see "Versioning" in CLAUDE.md. -->
       <p class="version">
-        Version 1.8.0 ·
+        Version 1.9.0 ·
         <a href="https://github.com/reino-juan/seo-doctor-dec" target="_blank" rel="noopener">Source code on GitHub</a>
       </p>
     </footer>

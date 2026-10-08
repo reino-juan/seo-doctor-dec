@@ -572,19 +572,22 @@ body {
 
 /* Disclosure chevron: right when closed, down when open. */
 .optional-crawl summary,
-.disclosure summary {
+.disclosure summary,
+.bookmarklet-summary {
   position: relative;
   list-style: none;
   cursor: pointer;
 }
 
 .optional-crawl summary::-webkit-details-marker,
-.disclosure summary::-webkit-details-marker {
+.disclosure summary::-webkit-details-marker,
+.bookmarklet-summary::-webkit-details-marker {
   display: none;
 }
 
 .optional-crawl summary::before,
-.disclosure summary::before {
+.disclosure summary::before,
+.bookmarklet-summary::before {
   content: '';
   position: absolute;
   left: 4px;
@@ -598,7 +601,8 @@ body {
 }
 
 .optional-crawl[open] summary::before,
-.disclosure[open] summary::before {
+.disclosure[open] summary::before,
+.bookmarklet[open] .bookmarklet-summary::before {
   transform: rotate(45deg);
 }
 
@@ -838,6 +842,73 @@ body {
   white-space: nowrap;
 }
 
+/* ---------- Bookmarklets ---------- */
+
+.tool-extra {
+  font-size: var(--text-base);
+}
+
+.bookmarklets {
+  margin-top: 32px;
+  border-top: 1px solid var(--rule);
+}
+
+.bookmarklet {
+  border-bottom: 1px solid var(--rule);
+}
+
+.bookmarklet-summary {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 4px 20px;
+  padding: 14px 0 14px 26px;
+}
+
+.bookmarklet-summary::before {
+  top: 21px;
+}
+
+.bookmarklet-summary:hover .bookmarklet-name {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.bookmarklet-name {
+  font-weight: 700;
+}
+
+.bookmarklet-desc {
+  color: var(--slate);
+}
+
+.bookmarklet-body {
+  padding: 0 0 20px 26px;
+}
+
+.code-block {
+  max-height: 220px;
+  margin: 0;
+  padding: 12px 14px;
+  overflow: auto;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  background: var(--surface-sunk);
+  font: 12px/1.5 ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.bookmarklet-actions {
+  margin-top: 12px;
+}
+
+.drag-link {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+  cursor: grab;
+}
+
 /* ---------- Footer ---------- */
 
 .footer {
@@ -903,6 +974,10 @@ body {
     padding: 0;
   }
 
+  .bookmarklet-summary {
+    grid-template-columns: 1fr;
+  }
+
   .tool-settings {
     margin: 0 0 0 auto;
     padding: 6px 0 6px 14px;
@@ -939,7 +1014,8 @@ body {
 
   .dropzone,
   .optional-crawl summary::before,
-  .disclosure summary::before {
+  .disclosure summary::before,
+  .bookmarklet-summary::before {
     transition: none;
   }
 }
