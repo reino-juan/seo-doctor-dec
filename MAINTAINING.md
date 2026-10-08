@@ -19,6 +19,8 @@ website. It has three tools in the sidebar:
 - **Metadata** (two steps): checks titles and meta descriptions, and turns the market's new
   texts into import files (section 1b).
 - **H1** (one step): finds pages with no H1 or more than one (section 1c).
+- **4xx & 5xx errors** (one step): turns Screaming Frog's broken-link export into a clean list of
+  links to fix (section 1d).
 
 **Settings** (bottom of the sidebar) holds the lists the tools share: the **locales** offered as
 checkboxes in Page type and Metadata, and the **catalogs** suggested in Metadata. Add, remove or
@@ -77,6 +79,22 @@ Upload a crawl with Address and H1 1 (H1 2 finds pages with more than one H1). T
 they write the new H1 in "H1 to implement". There is no XML step: H1s are changed in the site
 itself.
 
+### 1d. 4xx & 5xx errors
+
+1. In Screaming Frog: **Bulk Export › Response Codes › Internal & External › All Error (4xx 5xx &
+   No Response) Inlinks** (the 4xx-only and 5xx-only exports work too). Upload the CSV.
+2. The app shows e.g. "*72 broken links to fix.*" A broken link in the header, footer or menu
+   appears on every page of the export (789 rows for one link); the app keeps it **once**, with a
+   note "Footer link on 789 pages: fix it once in the template". Links in the page content are
+   kept once per page (repeats on the same page are merged).
+3. Download `KIEHLS_ES_4xx_5xx_errors.xlsx` and send it to the webmasters:
+   - `Links to fix`: Source, Destination, Anchor (alt text for images), Status Code, Type, Link
+     Path, Link Position, Link Origin, Note. Template links come first, in bold.
+   - `To check`: links that are probably fine for visitors: Cloudflare email protection, pages
+     that block the crawler (401/403) and no-response links. Open them in a browser first.
+   - Notes also point out links to a **staging** site, **unrendered template code** in the URL
+     (`${…}`), external sites and server errors (may be temporary).
+
 ### All tools
 
 If an uploaded `.xlsx` has more than one sheet with data, the app asks which sheet to use.
@@ -126,11 +144,14 @@ js/step-xml.js      Page type Step 2 screen
 js/step-meta-report.js  Metadata Step 1 screen
 js/step-meta-xml.js     Metadata Step 2 screen + "Manage catalogs"
 js/step-h1.js       H1 screen
+js/errors.js        RULES (4xx & 5xx): grouping, notes, what goes to To check
+js/errors-report.js Builds the 4xx & 5xx Excel report
+js/step-errors.js   4xx & 5xx screen
 js/settings.js      Shared locale + catalog lists (saved in the browser), flags
 js/step-settings.js Settings screen
 ```
 
-The **rules** files (`pagetype.js`, `xml.js`, `metadata.js`, `h1.js`) never touch the page. They take data in and give
+The **rules** files (`pagetype.js`, `xml.js`, `metadata.js`, `h1.js`, `errors.js`) never touch the page. They take data in and give
 data back, which keeps them easy to read and test. The **screen** files (`step-*.js`) only
 handle the page. They are each wrapped in `(() => { ... })();` so their variable names don't
 clash with each other.
@@ -263,6 +284,7 @@ the **handover zip** (`examples/` folder), not in GitHub, because they contain r
 | 2    | `lancome_es_completed.csv`              | "196 pages will get their new page type."         |
 | Metadata 1 | `ysl_fr_metadata_crawl.csv`       | "233 of 301 pages need a new title or description." |
 | H1   | `ysl_fr_metadata_crawl.csv`             | "86 of 301 pages need an H1 fix." (59 without H1, 27 with several) |
+| 4xx & 5xx | `kiehls_es_error_inlinks.csv`      | "72 broken links to fix." (4,149 rows; 11 more in To check) |
 | Metadata 2 | `ysl_fr_country_doc_descriptions.csv` + the crawl above | "183 pages will get new metadata." (137 products, 3 categories, 43 content pages) |
 
 `lancome_es_expected_entries.json` lists the exact 196 `content-id → page type` pairs that the
@@ -270,7 +292,8 @@ original Google Sheet produced for that file. The Step 2 XML must contain exactl
 `ysl_fr_expected_products.json` does the same for the 137 Metadata product descriptions.
 
 `examples/` also has test pages that run these checks automatically in a browser
-(`test-columns.html`, `test-sheet-picker.html`, `test-metadata.html`, `test-metadata-ui.html`).
+(`test-columns.html`, `test-sheet-picker.html`, `test-metadata.html`, `test-errors.html`,
+`test-metadata-ui.html`).
 Serve the project folder (`python3 -m http.server 8765`) and open them, e.g.
 `http://localhost:8765/examples/test-metadata.html`.
 

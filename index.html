@@ -16,6 +16,8 @@
     <script defer src="js/metadata-report.js"></script>
     <script defer src="js/h1.js"></script>
     <script defer src="js/h1-report.js"></script>
+    <script defer src="js/errors.js"></script>
+    <script defer src="js/errors-report.js"></script>
     <script defer src="js/settings.js"></script>
     <script defer src="js/app.js"></script>
     <script defer src="js/step-report.js"></script>
@@ -23,6 +25,7 @@
     <script defer src="js/step-meta-report.js"></script>
     <script defer src="js/step-meta-xml.js"></script>
     <script defer src="js/step-h1.js"></script>
+    <script defer src="js/step-errors.js"></script>
     <script defer src="js/step-settings.js"></script>
   </head>
   <body>
@@ -38,6 +41,7 @@
         <a class="tool" href="#page-type" aria-current="page">Page type</a>
         <a class="tool" href="#metadata">Metadata</a>
         <a class="tool" href="#h1">H1</a>
+        <a class="tool" href="#errors">4xx &amp; 5xx errors</a>
         <p class="tool-soon">More checks coming soon</p>
         <a class="tool tool-settings" href="#settings">Settings</a>
       </nav>
@@ -324,6 +328,47 @@
         </div>
       </main>
 
+      <main class="sheet" id="errors" hidden>
+        <div class="sheet-inner">
+          <h2 class="tool-title">4xx &amp; 5xx errors</h2>
+          <p class="tool-intro">
+            Turn Screaming Frog's list of broken links into one row per link to fix: header and footer
+            links once, page links without duplicates, likely false positives set apart.
+          </p>
+
+          <section class="intake intake-first">
+            <input type="file" id="errors-file" accept=".csv,.xlsx" hidden />
+            <button id="errors-upload-button" class="dropzone" type="button" aria-describedby="errors-help">
+              <span class="dropzone-title">Drop the Screaming Frog inlinks export here</span>
+              <span class="dropzone-sub">or click to choose a .csv or .xlsx file</span>
+            </button>
+            <p id="errors-help" class="hint">
+              In Screaming Frog: Bulk Export › Response Codes › Internal &amp; External › All Error (4xx 5xx
+              &amp; No Response) Inlinks. The Client Error (4xx) and Server Error (5xx) exports work too.
+            </p>
+            <div class="file-row">
+              <span id="errors-file-name" class="file-name"></span>
+              <span id="errors-loading" class="loading" role="status" hidden>Reading file…</span>
+              <span id="errors-sheet-name" class="sheet-name"></span>
+              <button id="errors-change-sheet" class="btn btn-quiet" type="button" hidden>Change sheet</button>
+              <button id="errors-clear-button" class="btn btn-quiet" type="button" hidden>New export</button>
+            </div>
+            <div id="errors-sheet-picker" class="sheet-picker" role="group" aria-labelledby="errors-sheet-picker-title" hidden>
+              <p id="errors-sheet-picker-title" class="sheet-picker-title"></p>
+              <div class="sheet-options"></div>
+            </div>
+            <p id="errors-upload-error" class="error" role="alert" hidden></p>
+          </section>
+
+          <section id="errors-result" class="diagnosis" aria-live="polite" hidden>
+            <p id="errors-site" class="patient"></p>
+            <p id="errors-finding" class="finding"></p>
+            <p id="errors-advice" class="advice"></p>
+            <button id="errors-download-button" class="btn btn-primary" type="button">Download report</button>
+          </section>
+        </div>
+      </main>
+
       <main class="sheet" id="settings" hidden>
         <div class="sheet-inner">
           <h2 class="tool-title">Settings</h2>
@@ -370,7 +415,7 @@
       <p>Created by Juan Reino. <a href="mailto:juan.reino@loreal.com">juan.reino@loreal.com</a></p>
       <!-- Bump on each release; see "Versioning" in CLAUDE.md. -->
       <p class="version">
-        Version 1.7.0 ·
+        Version 1.8.0 ·
         <a href="https://github.com/reino-juan/seo-doctor-dec" target="_blank" rel="noopener">Source code on GitHub</a>
       </p>
     </footer>

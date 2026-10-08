@@ -7,6 +7,8 @@ Browser-based SEO audit tools for a Screaming Frog crawl:
 - **Metadata**: finds titles and meta descriptions to fix, produces an Excel report for the
   market, then SFCC catalog/library import XMLs with their new texts.
 - **H1**: finds pages with no H1 or more than one, and produces an Excel report for the market.
+- **4xx & 5xx errors**: turns Screaming Frog's broken-link export into one row per link to fix
+  (template links once, no duplicates, likely false positives set apart).
 
 ## Run
 
