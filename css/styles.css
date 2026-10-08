@@ -909,6 +909,13 @@ body {
   cursor: grab;
 }
 
+/* A link styled as a button (e.g. "Open the profiles folder"). */
+.btn-link {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+}
+
 /* ---------- Footer ---------- */
 
 .footer {

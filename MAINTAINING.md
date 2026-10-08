@@ -26,6 +26,10 @@ website. It has three tools in the sidebar:
 to copy the code or drag it to the bookmarks bar. To add one, add an entry (name, description,
 code) to `js/bookmarklets.js`.
 
+**Screaming Frog profiles** (bottom of the sidebar) links to the DEC SharePoint folder with the
+latest Screaming Frog profiles (custom extraction for Page Designer ID, GEO page type…). If the
+folder moves, change the link in `index.html` (section `sf-profiles`).
+
 **Settings** (bottom of the sidebar) holds the lists the tools share: the **locales** offered as
 checkboxes in Page type and Metadata, and the **catalogs** suggested in Metadata. Add, remove or
 "Restore the default list". Changes are saved in that browser only.

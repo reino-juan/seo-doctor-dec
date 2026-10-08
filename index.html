@@ -47,6 +47,7 @@
         <p class="tool-soon">More checks coming soon</p>
         <a class="tool tool-settings" href="#settings">Settings</a>
         <a class="tool tool-extra" href="#bookmarklets">Bookmarklets</a>
+        <a class="tool tool-extra" href="#sf-profiles">Screaming Frog profiles</a>
       </nav>
 
       <main class="sheet" id="page-type">
@@ -428,13 +429,31 @@
           <div id="bookmarklet-list" class="bookmarklets"></div>
         </div>
       </main>
+
+      <main class="sheet" id="sf-profiles" hidden>
+        <div class="sheet-inner">
+          <h2 class="tool-title">Screaming Frog profiles</h2>
+          <p class="tool-intro">
+            The latest Screaming Frog profiles with the custom extraction are in the DEC SharePoint
+            folder. You need them to extract elements such as the Page Designer ID or the GEO page
+            type, which the tools here rely on.
+          </p>
+          <div class="action-row">
+            <a class="btn btn-primary btn-link" href="https://loreal.sharepoint.com/:f:/s/DEC/IgDpXY_4x_jTSJthic6ywBgfAa1wfoMEJgw-yWV3L44vYQA?e=n7GG4j" target="_blank" rel="noopener">Open the profiles folder</a>
+          </div>
+          <p class="hint">
+            Opens in SharePoint (sign in with your L'Oréal account). To use a profile in Screaming Frog:
+            File › Configuration › Load, then choose the downloaded file.
+          </p>
+        </div>
+      </main>
     </div>
 
     <footer class="footer">
       <p>Created by Juan Reino. <a href="mailto:juan.reino@loreal.com">juan.reino@loreal.com</a></p>
       <!-- Bump on each release; see "Versioning" in CLAUDE.md. -->
       <p class="version">
-        Version 1.9.0 ·
+        Version 1.10.0 ·
         <a href="https://github.com/reino-juan/seo-doctor-dec" target="_blank" rel="noopener">Source code on GitHub</a>
       </p>
     </footer>
