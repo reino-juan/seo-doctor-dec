@@ -22,16 +22,25 @@ function addInstructions(workbook, grouped) {
 }
 
 /**
- * "Instructions", "Links to fix" and, when there are any, "To check" (likely false positives).
- * Returns a Blob.
+ * "Instructions", "Broken URLs", then one sheet per ERRORS_SHEETS group that has links ("Template",
+ * "Internal", "External", "To check"). Returns a Blob.
  */
 async function buildErrorsReport(grouped) {
-  const { links, toCheck } = grouped;
+  const { links, toCheck, brokenUrls } = grouped;
   const workbook = new ExcelJS.Workbook();
   addInstructions(workbook, grouped);
-  const sheets = [['Links to fix', links], ['To check', toCheck]];
-  sheets.forEach(([name, rows], i) => {
-    if (i > 0 && rows.length === 0) return;
+
+  const widths = { Destination: 70, 'Status Code': 11, 'Pages linking': 13, Where: 22, Suggestion: 70 };
+  const urls = addSheet(workbook, 'Broken URLs', BROKEN_URL_COLUMNS.map((column) => [column, widths[column]]));
+  brokenUrls.forEach((url) => {
+    const row = urls.addRow(BROKEN_URL_COLUMNS.map((column) => (column === 'Status Code' ? Number(url[column]) || url[column] : url[column])));
+    if (url.redirect) row.font = { bold: true }; // one redirect fixes many pages
+  });
+
+  const all = [...links, ...toCheck];
+  ERRORS_SHEETS.forEach(({ key, name }) => {
+    const rows = all.filter((link) => link.sheet === key);
+    if (rows.length === 0) return;
     const sheet = addSheet(workbook, name, ERRORS_COLUMNS.map((column) => [column, ERRORS_WIDTHS[column]]));
     rows.forEach((row) => {
       const added = sheet.addRow(ERRORS_COLUMNS.map((column) => (column === 'Status Code' ? Number(row[column]) || row[column] : row[column])));

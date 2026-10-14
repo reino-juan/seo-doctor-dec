@@ -97,15 +97,21 @@ itself.
    appears on every page of the export (789 rows for one link); the app keeps it **once**, with a
    note "Footer link on 789 pages: fix it once in the template". Links in the page content are
    kept once per page (repeats on the same page are merged).
-3. Download `KIEHLS_ES_4xx_5xx_errors.xlsx` and send it to the webmasters:
+3. Download `KIEHLS_ES_4xx_5xx_errors.xlsx` and send it to the webmasters. Sheets, by who fixes
+   what (`ERRORS_SHEETS` in `js/errors.js`):
    - `Instructions`: how to read and work through the file (the same text as "How to read the
      report" in the app; edit `ERRORS_GUIDE` in `js/errors.js` to change it).
-   - `Links to fix`: Source, Destination, Anchor (alt text for images), Status Code, Type, Link
-     Path, Link Position, Link Origin, Note. Template links come first, in bold.
-   - `To check`: links that are probably fine for visitors: Cloudflare email protection, pages
-     that block the crawler (401/403) and no-response links. Open them in a browser first.
+   - `Broken URLs`: one row per broken URL, how many pages link to it and a suggestion. A page of
+     the site linked from 5 or more pages (`REDIRECT_FROM_PAGES`) is in bold: one 301 redirect
+     fixes all those links at once.
+   - `Template` (header, footer, menu; in bold), `Internal` (links to pages of the site, staging
+     links included) and `External` (links to other sites): Source, Destination, Anchor (alt text
+     for images), Status Code, Type, Link Path, Link Position, Link Origin, Note. One row per link.
+   - `To check`: same columns, links that are probably fine for visitors: Cloudflare email
+     protection, pages that block the crawler (401/403) and no-response links. Open them in a
+     browser first.
    - Notes also point out links to a **staging** site, **unrendered template code** in the URL
-     (`${…}`), external sites and server errors (may be temporary).
+     (`${…}`, SFCC `$url(…)$`), external sites and server errors (may be temporary).
 
 ### All tools
 
@@ -299,6 +305,7 @@ the **handover zip** (`examples/` folder), not in GitHub, because they contain r
 | Metadata 1 | `ysl_fr_metadata_crawl.csv`       | "233 of 301 pages need a new title or description." |
 | H1   | `ysl_fr_metadata_crawl.csv`             | "86 of 301 pages need an H1 fix." (59 without H1, 27 with several) |
 | 4xx & 5xx | `kiehls_es_error_inlinks.csv`      | "72 broken links to fix." (4,149 rows; 11 more in To check) |
+| 4xx & 5xx | `kiehls_de_error_inlinks.csv`      | "349 broken links to fix." (8 template, 308 internal, 33 external; 11 broken URLs worth a redirect) |
 | Metadata 2 | `ysl_fr_country_doc_descriptions.csv` + the crawl above | "183 pages will get new metadata." (137 products, 3 categories, 43 content pages) |
 
 `lancome_es_expected_entries.json` lists the exact 196 `content-id → page type` pairs that the

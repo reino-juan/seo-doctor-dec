@@ -68,9 +68,10 @@
     }
   });
 
-  function showDiagnosis({ links, toCheck, rows }) {
+  function showDiagnosis({ links, toCheck, brokenUrls, rows }) {
     const count = links.length;
-    const template = links.filter((link) => link.template).length;
+    const inSheet = (key) => links.filter((link) => link.sheet === key).length;
+    const redirects = brokenUrls.filter((url) => url.redirect).length;
     site.textContent = siteName((links[0] ?? toCheck[0])?.Source);
     const rowsText = `${rows.toLocaleString('en')} ${plural(rows, 'row', 'rows')}`;
 
@@ -78,11 +79,16 @@
     if (count > 0) {
       // Only one number in the serif finding: its old-style figures make "4,149" read like "1,149".
       setFinding(finding, count, `broken ${plural(count, 'link', 'links')} to fix.`, { alert: true });
-      sentences.push(
-        template > 0
-          ? `From ${rowsText} in the export. ${template} ${plural(template, 'is', 'are')} in the header, footer or menu (fix each once in the template) and ${count - template} in page content.`
-          : `From ${rowsText} in the export, all in page content (repeated links on the same page were merged).`
+      const parts = ERRORS_SHEETS.filter(({ key }) => key !== 'check' && inSheet(key) > 0).map(
+        ({ key, what }) => `${inSheet(key)} ${what}`
       );
+      const list = parts.length > 1 ? `${parts.slice(0, -1).join(', ')} and ${parts.at(-1)}` : parts[0];
+      sentences.push(`From ${rowsText} in the export: ${list}, each in its own sheet.`);
+      if (redirects > 0) {
+        sentences.push(
+          `${redirects} broken ${plural(redirects, 'URL is', 'URLs are')} linked from ${REDIRECT_FROM_PAGES} or more pages: one redirect fixes each at once (Broken URLs sheet).`
+        );
+      }
     } else {
       finding.textContent = 'No broken links to fix.';
       sentences.push(`Checked ${rowsText} in the export.`);
