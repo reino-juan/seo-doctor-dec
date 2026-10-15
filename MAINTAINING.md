@@ -219,13 +219,22 @@ The count shown on screen is the number of pages that are empty or ERROR.
 
 ### Step 2 XML, `js/xml.js`
 
-- Reads `Address`, `Page Designer ID` (or `Page Designer 1`) and `GEO Page Type to Implement`.
-- A page goes into the XML only if it has a **Page Designer ID** (used as `content-id`) and the
-  market chose a value other than empty or `OK`.
+- Reads `Address`, `GEO Page Type to Implement` and `Page Designer ID` (or `Page Designer 1`)
+  and/or `Content Asset` (or `Content Asset 1`).
+- A page goes into the XML if it has a **Page Designer ID** (used as `content-id`) or, without
+  one, a **Content Asset ID**, and the market chose a value other than empty or `OK`.
+- **Content assets** need the site's **library export** (Business Manager › Site Import &
+  Export, the library XML): upload it in "Add the content library". Their page type goes in the
+  `analyticsPageCategory` key of their `jsonData`. Because jsonData holds other settings and the
+  import replaces it whole, the app takes the current jsonData from the library and only adds or
+  changes that key. Assets with their own jsonData for a ticked locale, or with invalid JSON, are
+  listed "update it by hand"; assets that already have the value need nothing.
 - The value must be a Master Key value or `others`. Anything else is **left out and listed on
   screen**. So are pages that share a Page Designer ID but have different values.
 - `x-default` is always written, followed by the ticked locales.
-- **Known limitation:** pages that only have a Content Asset ID are not included yet.
+- **Open question:** Page Designer pages are written with only `stylesheetID` + `pageCategory`
+  in `<data>`, while real pages have more settings there (hideHeader, isPersonalized…). If an
+  import turns out to wipe them, the same library merge should be used for Page Designer.
 
 XML format, which must stay exactly like this:
 

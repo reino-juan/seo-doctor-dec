@@ -109,8 +109,8 @@
                 <span class="dropzone-sub">or click to choose a .csv or .xlsx file</span>
               </button>
               <p id="xml-help" class="hint">
-                Needs the columns Address, Page Designer ID (or Page Designer 1) and GEO Page Type to
-                Implement. Only pages with a Page Designer ID go into the XML.
+                Needs the columns Address, GEO Page Type to Implement and Page Designer ID and/or Content
+                Asset. Page Designer pages go straight into the XML; content assets need the library below.
               </p>
               <div class="file-row">
                 <span id="xml-file-name" class="file-name"></span>
@@ -126,6 +126,30 @@
               <p id="xml-upload-error" class="error" role="alert" hidden></p>
             </section>
 
+            <details id="xml-lib-details" class="optional-crawl">
+              <summary>
+                <span class="optional-title">Add the content library <span class="optional-tag">For content assets</span></span>
+                <span id="xml-lib-help" class="optional-sub">
+                  The site's library export from Business Manager (.xml, the whole library or a filtered one).
+                  Needed for rows with a Content Asset and no Page Designer ID: their page type goes in their
+                  jsonData, which has to be merged with what the library already has.
+                </span>
+              </summary>
+              <section class="intake">
+                <input type="file" id="xml-lib-file" accept=".xml" hidden />
+                <button id="xml-lib-upload-button" class="dropzone dropzone-small" type="button" aria-describedby="xml-lib-help">
+                  <span class="dropzone-title">Drop the library XML here</span>
+                  <span class="dropzone-sub">or click to choose a .xml file</span>
+                </button>
+                <div class="file-row">
+                  <span id="xml-lib-file-name" class="file-name"></span>
+                  <span id="xml-lib-loading" class="loading" role="status" hidden>Reading library…</span>
+                  <button id="xml-lib-clear-button" class="btn btn-quiet" type="button" hidden>Remove library</button>
+                </div>
+                <p id="xml-lib-error" class="error" role="alert" hidden></p>
+              </section>
+            </details>
+
             <section id="xml-result" class="diagnosis" aria-live="polite" hidden>
               <p id="xml-site" class="patient"></p>
               <p id="xml-finding" class="finding"></p>
@@ -136,7 +160,7 @@
                 <div class="table-wrap">
                   <table>
                     <thead>
-                      <tr><th>Address</th><th>Page Designer ID</th><th>Value</th><th>Reason</th></tr>
+                      <tr><th>Address</th><th>ID</th><th>Value</th><th>Reason</th></tr>
                     </thead>
                     <tbody id="xml-skipped-rows"></tbody>
                   </table>
@@ -457,7 +481,7 @@
       <p>Created by Juan Reino. <a href="mailto:juan.reino@loreal.com">juan.reino@loreal.com</a></p>
       <!-- Bump on each release; see "Versioning" in CLAUDE.md. -->
       <p class="version">
-        Version 1.11.0 ·
+        Version 1.12.0 ·
         <a href="https://github.com/reino-juan/seo-doctor-dec" target="_blank" rel="noopener">Source code on GitHub</a>
       </p>
     </footer>
